@@ -1,0 +1,437 @@
+[
+  {
+    "id": "padlock-meaning",
+    "act": 1,
+    "question": "What does the padlock next to a web address actually tell you?",
+    "options": [
+      "The site is legit and safe",
+      "Your connection is encrypted",
+      "The site's owner was verified"
+    ],
+    "answer": 1,
+    "why": "Only that the link is encrypted. Nearly all phishing sites show a padlock too, so it says nothing about honesty.",
+    "public_pct": 35,
+    "room_pct": 78,
+    "target_pct_correct": 78,
+    "source": "https://blog.chromium.org/2023/05/an-update-on-lock-icon.html"
+  },
+  {
+    "id": "sars-refund-link",
+    "act": 1,
+    "question": "SMS: 'Your SARS refund is ready, tap the link to confirm bank details.' True?",
+    "options": [
+      "SARS sends refund links in tax season",
+      "Fine if it quotes your tax number",
+      "SARS never sends links to other sites"
+    ],
+    "answer": 2,
+    "why": "SARS says it never sends hyperlinks or asks for banking details by SMS. Open eFiling yourself to check a refund.",
+    "public_pct": 50,
+    "room_pct": 82,
+    "target_pct_correct": 82,
+    "source": "https://www.sars.gov.za/individuals/scams-and-phishing/"
+  },
+  {
+    "id": "otp-caller-id",
+    "act": 1,
+    "question": "Caller ID shows your bank's number. They ask for your OTP 'to stop fraud'.",
+    "options": [
+      "Hang up: caller ID can be faked",
+      "Share it: the number is verified",
+      "Share it if they know your ID number"
+    ],
+    "answer": 0,
+    "why": "Caller ID is easy to spoof, and an OTP approves a transaction. SABRIC: never give an OTP over the phone, to anyone.",
+    "public_pct": 55,
+    "room_pct": 85,
+    "target_pct_correct": 85,
+    "source": "https://www.fcc.gov/consumers/guides/spoofing-and-caller-id"
+  },
+  {
+    "id": "qr-parking-sticker",
+    "act": 1,
+    "question": "A QR sticker on a parking meter opens a payment page. Main risk?",
+    "options": [
+      "Scanning it infects your phone",
+      "It copies your phone contacts",
+      "A fake sticker over the real code"
+    ],
+    "answer": 2,
+    "why": "A QR code is just a link. Crooks stick their own codes over real ones so you pay them. Check the address first.",
+    "public_pct": 45,
+    "room_pct": 80,
+    "target_pct_correct": 80,
+    "source": "https://consumer.ftc.gov/consumer-alerts/2023/12/scammers-hide-harmful-links-qr-codes-steal-your-information"
+  },
+  {
+    "id": "whatsapp-code",
+    "act": 1,
+    "question": "Friend's WhatsApp: 'Sent you a 6-digit code by mistake, forward it.' If you do?",
+    "options": [
+      "Nothing: codes are single-use",
+      "They take over your WhatsApp",
+      "They only see your old backups"
+    ],
+    "answer": 1,
+    "why": "It's your WhatsApp registration code. Whoever has it moves your account to their phone, then scams your contacts.",
+    "public_pct": 50,
+    "room_pct": 82,
+    "target_pct_correct": 82,
+    "source": "https://faq.whatsapp.com/1131652977717250"
+  },
+  {
+    "id": "job-upfront-fee",
+    "act": 1,
+    "question": "LinkedIn recruiter: remote job, but first pay R1 500 for training and a laptop.",
+    "options": [
+      "A scam: real employers don't charge",
+      "Normal for remote roles",
+      "Fine if refunded with first salary"
+    ],
+    "answer": 0,
+    "why": "Real employers don't make you pay to get hired. Paying for 'training' or 'equipment' is the classic job-scam ask.",
+    "public_pct": 55,
+    "room_pct": 85,
+    "target_pct_correct": 85,
+    "source": "https://consumer.ftc.gov/articles/job-scams"
+  },
+  {
+    "id": "no-service-sim-swap",
+    "act": 1,
+    "question": "Phone says 'No service' for hours; people beside you have signal. Biggest worry?",
+    "options": [
+      "Load-shedding at the tower",
+      "Your phone needs an update",
+      "A SIM swap to grab your OTPs"
+    ],
+    "answer": 2,
+    "why": "Crooks move your number to their SIM to receive your bank OTPs. Unexplained signal loss: call your network now.",
+    "public_pct": 40,
+    "room_pct": 75,
+    "target_pct_correct": 75,
+    "source": "https://www.sabric.co.za/how-to-stay-safe/"
+  },
+  {
+    "id": "true-two-factor",
+    "act": 1,
+    "question": "Which of these is true two-factor sign-in?",
+    "options": [
+      "Password + security question",
+      "Password + code sent to your phone",
+      "Password + memorable word"
+    ],
+    "answer": 1,
+    "why": "Two factors means two different kinds: something you know plus something you have. A question is just another password.",
+    "public_pct": 28,
+    "room_pct": 75,
+    "target_pct_correct": 75,
+    "source": "https://pages.nist.gov/800-63-4/sp800-63b.html"
+  },
+  {
+    "id": "public-wifi-https",
+    "act": 2,
+    "question": "Open airport Wi-Fi, your bank's real HTTPS site. Can others read your password?",
+    "options": [
+      "No, HTTPS encrypts it",
+      "Yes, open Wi-Fi exposes everything",
+      "Only if you're not in incognito"
+    ],
+    "answer": 0,
+    "why": "HTTPS encrypts it end to end. The bigger Wi-Fi risk today is being sent to a fake login page, not someone reading traffic.",
+    "public_pct": 30,
+    "room_pct": 65,
+    "target_pct_correct": 65,
+    "source": "https://consumer.ftc.gov/articles/are-public-wi-fi-networks-safe-what-you-need-know"
+  },
+  {
+    "id": "passkey-vs-codes",
+    "act": 2,
+    "question": "You log in on a perfect fake bank site. Which factor still saves you?",
+    "options": [
+      "SMS one-time PIN",
+      "Authenticator app code",
+      "A passkey"
+    ],
+    "answer": 2,
+    "why": "Codes can be typed into the fake site and relayed in seconds. A passkey only works on the real site it was made for.",
+    "public_pct": 30,
+    "room_pct": 65,
+    "target_pct_correct": 65,
+    "source": "https://developers.google.com/identity/passkeys"
+  },
+  {
+    "id": "windows10-end-of-support",
+    "act": 2,
+    "question": "Windows 10 support ended Oct 2025. Without paid updates, what stopped?",
+    "options": [
+      "The PC stopped booting",
+      "Security fixes for Windows",
+      "Defender virus definitions"
+    ],
+    "answer": 1,
+    "why": "The PC still runs and Defender definitions continue to 2028, but holes in Windows itself no longer get patched.",
+    "public_pct": 35,
+    "room_pct": 68,
+    "target_pct_correct": 68,
+    "source": "https://techcommunity.microsoft.com/blog/microsoftthreatprotectionblog/end-of-windows-10-support-what-defender-customers-need-to-know/4461349"
+  },
+  {
+    "id": "password-manager-autofill",
+    "act": 2,
+    "question": "Besides remembering passwords, how does a password manager fight phishing?",
+    "options": [
+      "It blocks phishing emails",
+      "It changes your passwords daily",
+      "It won't autofill on a fake site"
+    ],
+    "answer": 2,
+    "why": "It fills only on the real site's address. If it won't autofill, stop: you may be on a lookalike page.",
+    "public_pct": 35,
+    "room_pct": 70,
+    "target_pct_correct": 70,
+    "source": "https://www.ncsc.gov.uk/collection/top-tips-for-staying-secure-online/password-managers"
+  },
+  {
+    "id": "backup-3-2-1",
+    "act": 2,
+    "question": "3-2-1 backups: 3 copies, 2 types of storage, and 1 copy…",
+    "options": [
+      "Kept offsite",
+      "Encrypted",
+      "Tested monthly"
+    ],
+    "answer": 0,
+    "why": "One copy away from the building survives fire, theft, and ransomware that hits everything on your network.",
+    "public_pct": 35,
+    "room_pct": 72,
+    "target_pct_correct": 72,
+    "source": "https://www.cisa.gov/sites/default/files/publications/data_backup_options.pdf"
+  },
+  {
+    "id": "bec-bank-change",
+    "act": 2,
+    "question": "Supplier emails from their real address: 'New bank account, pay here.' Best step?",
+    "options": [
+      "Pay: it's their real address",
+      "Reply to the email to confirm",
+      "Call them on a number you already have"
+    ],
+    "answer": 2,
+    "why": "Real mailboxes get hacked, so a reply reaches the crook. Verify bank changes by phone, on a number from your own records.",
+    "public_pct": 45,
+    "room_pct": 75,
+    "target_pct_correct": 75,
+    "source": "https://www.ic3.gov/PSA/2023/PSA230609"
+  },
+  {
+    "id": "mfa-fatigue",
+    "act": 2,
+    "question": "2 am: fifteen 'Approve sign-in?' prompts you didn't trigger. Most likely meaning?",
+    "options": [
+      "An app glitch, ignore it",
+      "Someone already has your password",
+      "IT is testing the system"
+    ],
+    "answer": 1,
+    "why": "'MFA fatigue': a crook with your password spams prompts hoping you tap Approve. Deny them, then change the password.",
+    "public_pct": 45,
+    "room_pct": 78,
+    "target_pct_correct": 78,
+    "source": "https://www.cisa.gov/sites/default/files/publications/fact-sheet-implement-number-matching-in-mfa-applications-508c.pdf"
+  },
+  {
+    "id": "deepfake-ceo-call",
+    "act": 2,
+    "question": "Your CEO's exact voice: 'Urgent payment, I'm boarding, just do it.' Best check?",
+    "options": [
+      "Hang up, call his known number",
+      "Ask him to confirm by email",
+      "Check the caller ID matches"
+    ],
+    "answer": 0,
+    "why": "Voices clone from seconds of audio, and email and caller ID can be faked. Call back on a number you already have.",
+    "public_pct": 50,
+    "room_pct": 80,
+    "target_pct_correct": 80,
+    "source": "https://www.ic3.gov/PSA/2024/PSA241203"
+  },
+  {
+    "id": "popia-juristic-person",
+    "act": 3,
+    "question": "Under POPIA, 'personal information' can be about whom?",
+    "options": [
+      "Only living individuals",
+      "Only people with SA ID numbers",
+      "People and existing companies"
+    ],
+    "answer": 2,
+    "why": "Unlike GDPR, POPIA also covers identifiable, existing juristic persons such as companies, not just people.",
+    "public_pct": 30,
+    "room_pct": 62,
+    "target_pct_correct": 62,
+    "source": "https://www.gov.za/sites/default/files/gcis_document/201409/3706726-11act4of2013popi.pdf"
+  },
+  {
+    "id": "browser-in-browser",
+    "act": 3,
+    "question": "A Google sign-in pop-up shows the right address. Can it still be fake?",
+    "options": [
+      "No, the address bar proves it",
+      "Only if there's no padlock",
+      "Yes, the page can draw the whole window"
+    ],
+    "answer": 2,
+    "why": "'Browser-in-the-browser' draws a fake pop-up, address bar and all. Tell: your password manager won't autofill it.",
+    "public_pct": 30,
+    "room_pct": 65,
+    "target_pct_correct": 65,
+    "source": "https://blog.google/threat-analysis-group/tracking-cyber-activity-eastern-europe/"
+  },
+  {
+    "id": "oauth-consent",
+    "act": 3,
+    "question": "Fake app got 'Allow' access to your mail. Does a password reset fix it?",
+    "options": [
+      "No, revoke the app's access",
+      "Yes, it locks the app out",
+      "Yes, if MFA is switched on"
+    ],
+    "answer": 0,
+    "why": "The app got its own access, no password needed. Resets and MFA don't touch it: remove the app's permission.",
+    "public_pct": 30,
+    "room_pct": 65,
+    "target_pct_correct": 65,
+    "source": "https://learn.microsoft.com/en-us/defender-office-365/detect-and-remediate-illicit-consent-grants"
+  },
+  {
+    "id": "popia-breach-who-when",
+    "act": 3,
+    "question": "POPIA breach: who must the company notify, and when?",
+    "options": [
+      "Regulator only, within 72 hours",
+      "Regulator and affected people, ASAP",
+      "Affected people only, within 30 days"
+    ],
+    "answer": 1,
+    "why": "Section 22: the Regulator and the people affected, as soon as reasonably possible. 72 hours is GDPR's rule, not POPIA's.",
+    "public_pct": 35,
+    "room_pct": 65,
+    "target_pct_correct": 65,
+    "source": "https://www.gov.za/sites/default/files/gcis_document/201409/3706726-11act4of2013popi.pdf"
+  },
+  {
+    "id": "popia-no-threshold",
+    "act": 3,
+    "question": "Staffer emails a client list to the wrong person. Report it under POPIA?",
+    "options": [
+      "Yes, whatever the risk",
+      "Only if harm is likely",
+      "No, if the email was recalled"
+    ],
+    "answer": 0,
+    "why": "The Information Regulator says POPIA has no threshold: every security compromise, low risk included, gets reported.",
+    "public_pct": 35,
+    "room_pct": 65,
+    "target_pct_correct": 65,
+    "source": "https://inforegulator.org.za/wp-content/uploads/2025/08/Fact-Sheet-on-security-compromises-2.pdf"
+  },
+  {
+    "id": "usb-drop",
+    "act": 3,
+    "question": "Researchers dropped ~300 USB sticks on campus. Files were opened on roughly…",
+    "options": [
+      "About 10%",
+      "About 45%",
+      "About 90%"
+    ],
+    "answer": 1,
+    "why": "About 45%, the first within 6 minutes, mostly by people trying to return it. Hand found drives to IT, unplugged.",
+    "public_pct": 35,
+    "room_pct": 65,
+    "target_pct_correct": 65,
+    "source": "https://research.google/pubs/users-really-do-plug-in-usb-drives-they-find/"
+  },
+  {
+    "id": "nist-password-rotation",
+    "act": 3,
+    "question": "NIST's current advice on forcing password changes every 90 days?",
+    "options": [
+      "Do it: it's best practice",
+      "Don't: change only on compromise",
+      "Only for admin accounts"
+    ],
+    "answer": 1,
+    "why": "Forced changes breed weak, predictable passwords. NIST says don't, but force a change when there's evidence of compromise.",
+    "public_pct": 30,
+    "room_pct": 68,
+    "target_pct_correct": 68,
+    "source": "https://pages.nist.gov/800-63-4/sp800-63b.html"
+  },
+  {
+    "id": "ransom-paid-deletion",
+    "act": 3,
+    "question": "You pay a ransomware gang to delete your stolen data. Assume what?",
+    "options": [
+      "It's deleted: gangs keep their word",
+      "Copies may still exist and resurface",
+      "Police can confirm the deletion"
+    ],
+    "answer": 1,
+    "why": "Responders have seen 'deleted' data leaked or used to extort again after payment. Paying buys a promise, not deletion.",
+    "public_pct": 45,
+    "room_pct": 75,
+    "target_pct_correct": 75,
+    "source": "https://www.coveware.com/blog/ransomware-marketplace-report-q4-2020"
+  },
+  {
+    "id": "pro-krbtgt",
+    "act": 2,
+    "pro": true,
+    "question": "An attacker steals the krbtgt hash. What can they now forge?",
+    "options": [
+      "Kerberos tickets for any account",
+      "A new BitLocker recovery key",
+      "Signed Windows updates"
+    ],
+    "answer": 0,
+    "why": "That's a Golden Ticket: with krbtgt they mint Kerberos tickets for any account in the domain. Reset krbtgt twice.",
+    "public_pct": 3,
+    "room_pct": 30,
+    "target_pct_correct": 30,
+    "source": "https://attack.mitre.org/techniques/T1558/001/"
+  },
+  {
+    "id": "pro-event-4625",
+    "act": 3,
+    "pro": true,
+    "question": "Hundreds of Windows Security event 4625 in a minute. What are you seeing?",
+    "options": [
+      "Failed logons: likely password guessing",
+      "New user accounts being created",
+      "Scheduled tasks being created"
+    ],
+    "answer": 0,
+    "why": "4625 = an account failed to log on. A burst of them is brute force or password spraying (4720 = account created, 4698 = task).",
+    "public_pct": 3,
+    "room_pct": 35,
+    "target_pct_correct": 35,
+    "source": "https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4625"
+  },
+  {
+    "id": "pro-dmarc-reject",
+    "act": 3,
+    "pro": true,
+    "question": "Which DMARC policy tells receivers to refuse mail spoofing your domain?",
+    "options": [
+      "p=reject",
+      "p=quarantine",
+      "p=none"
+    ],
+    "answer": 0,
+    "why": "p=reject asks receivers to reject mail failing DMARC, ideally during SMTP. p=quarantine only marks it suspicious; p=none just monitors.",
+    "public_pct": 5,
+    "room_pct": 45,
+    "target_pct_correct": 45,
+    "source": "https://www.rfc-editor.org/rfc/rfc7489#section-6.3"
+  }
+]

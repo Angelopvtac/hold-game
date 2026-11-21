@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#060a1c">
+<title>HOLD</title>
+<link rel="stylesheet" href="/hold/fonts/fonts.css">
+<style>
+/* AGREE-QUIZ (18 Nov) on the phone: pick alone, then see your partner's pick and agree. */
+.qhd{font:700 14px var(--fd);letter-spacing:.2em;color:var(--cyan)}
+.qtx{width:min(88vw,340px);font:800 19px/1.3 var(--fu);text-align:center;margin:6px 0 10px}
+.qb{width:min(88vw,340px);border:0;border-radius:20px;padding:12px 14px;margin-top:8px;display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;color:var(--ink);background:#141d4a;box-shadow:inset 0 0 0 2px #22e4ff44;font:800 17px/1.25 var(--fu);position:relative;transition:opacity .2s,transform .12s}
+.qb:active{transform:scale(.97)}
+.qb .l{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font:700 22px var(--fd);color:var(--n0);background:linear-gradient(180deg,#7ef4ff,#22e4ff)}
+.qb.mine{background:#0f2f5e;box-shadow:inset 0 0 0 3px #22e4ff}
+.qb.dim{opacity:.4}
+.qb[disabled]{cursor:default}
+.qb .mt{position:absolute;right:10px;top:-9px;font:700 11px var(--fd);letter-spacing:.08em;padding:3px 8px;border-radius:8px;background:#ffb627;color:var(--n0)}
+.qb.ok{background:#0b2a22;box-shadow:inset 0 0 0 3px var(--mint)}.qb.ok .l{background:linear-gradient(180deg,#a8ffd6,#5dffb0)}
+.qst{width:min(88vw,340px);margin-top:12px;border-radius:18px;padding:10px 14px;text-align:center;font:800 16px/1.35 var(--fu);background:#0b1236e6;box-shadow:inset 0 0 0 2px #22e4ff44}
+.qst.split{box-shadow:inset 0 0 0 2px #ffb627;color:#ffe3a3}.qst.agree{box-shadow:inset 0 0 0 2px var(--mint);color:#c9ffe6}
+.qtime{margin-top:10px;font:800 13px var(--fu);letter-spacing:.14em;color:var(--dim)}.qtime b{font:700 26px var(--fd);color:var(--amber);margin-right:6px}
+.qwhy2{width:min(88vw,340px);margin-top:10px;font:800 15px/1.35 var(--fu);color:#d9d6f5;text-align:center}
+.bkp{width:min(88vw,340px);margin-top:8px;border-radius:16px;padding:8px 12px;background:#0b2a22cc;box-shadow:inset 0 0 0 2px #5dffb055;font:800 14px/1.3 var(--fu);text-align:center}
+.bkp .cells{display:flex;gap:6px;justify-content:center;margin:6px 0 2px}.bkp .cells i{width:46px;height:12px;border-radius:4px;background:#1d2a66;box-shadow:inset 0 0 0 1.5px #5dffb0aa}.bkp .cells i.f{background:var(--mint)}
+.bkp b{color:var(--mint)}
+.syncl{margin-top:6px;font:700 18px var(--fd);letter-spacing:.06em;color:#7ef4ff}
+/* The phone, TWO KEYS (15 Nov): every member holds the big button (labelled with the message's button), sees the
+   team pot and their partner's thumb, live. Never the message text: that is on the big screen.
+   Cyber look (16 Nov, Angelo picked B2): the neon city behind, you and your partner as Human Firewall defenders,
+   an arcade dome to hold. Fredoka + Nunito, vendored. Safe areas respected. */
+:root{--n0:#060a1c;--n1:#0c1333;--n3:#1d2a66;--cyan:#22e4ff;--mag:#ff4fd8;--amber:#ffb627;--amber2:#b36a00;--mint:#5dffb0;--ink:#f3f1ff;--dim:#93a0d8;--soft:#ff8fb8;
+  --fd:'Fredoka',ui-rounded,system-ui,sans-serif;--fu:'Nunito',ui-rounded,system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.2,1.5,.35,1);
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html,body{height:100%;background:var(--n0);color:var(--ink);font-family:var(--fu);-webkit-font-smoothing:antialiased;overflow:hidden;overscroll-behavior:none}
+button,input{font:inherit;color:inherit}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.sky{position:absolute;inset:0;background:radial-gradient(500px 420px at 80% 0%,#ff4fd820,transparent 70%),radial-gradient(500px 420px at 10% 0%,#22e4ff1a,transparent 70%),linear-gradient(180deg,#0d1438,var(--n0))}
+.grid{position:absolute;inset:0;background-image:linear-gradient(#22e4ff10 1px,transparent 1px),linear-gradient(90deg,#22e4ff10 1px,transparent 1px);background-size:32px 32px;-webkit-mask-image:radial-gradient(80% 50% at 50% 30%,#000,transparent);mask-image:radial-gradient(80% 50% at 50% 30%,#000,transparent)}
+.pworld{position:absolute;left:0;bottom:0;width:100%;height:100%}
+body.caught .sky{background:radial-gradient(500px 420px at 50% 22%,#ff4fd826,transparent 70%),linear-gradient(180deg,#120f3a,var(--n0))}
+.blink{animation:blink 4s infinite;transform-box:fill-box;transform-origin:center}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+.flick{animation:fl 3s infinite}@keyframes fl{0%,48%,52%,100%{opacity:1}50%{opacity:.4}}
+.glow{animation:gl 1.8s ease-in-out infinite}@keyframes gl{50%{opacity:.5}}
+.hand{animation:press 1.8s ease-in-out infinite}@keyframes press{50%{transform:translateY(2px)}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes pop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.05);opacity:1}100%{transform:none}}
+
+.pscreen{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:calc(var(--st) + 74px) 20px calc(var(--sb) + 24px);user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;cursor:pointer}
+.pscreen>*{pointer-events:none}
+.ptop{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:calc(var(--st) + 12px) 16px 0;z-index:3;pointer-events:none;gap:10px}
+.me{display:flex;align-items:center;gap:8px;font:700 16px var(--fd);letter-spacing:.03em;background:#080d26d9;border-radius:999px;padding:4px 14px 4px 6px;box-shadow:inset 0 0 0 2px #22e4ff22;min-width:0;max-width:62vw}
+.me svg{width:34px;height:38px;flex:none}
+.me span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bankt{font:600 12px var(--fd);letter-spacing:.14em;color:var(--dim);text-align:right;white-space:nowrap}
+.bankt b{display:block;font:700 22px var(--fd);color:var(--ink);letter-spacing:.02em}
+
+.pbig{font:700 44px/1 var(--fd);letter-spacing:.01em}
+.psm{font:800 15px/1.45 var(--fu);margin-top:12px;color:var(--dim)}
+.psm b{color:var(--ink)}
+.look{font:700 17px var(--fd);letter-spacing:.1em;color:var(--ink);margin-top:14px;background:#080d26d9;border-radius:999px;padding:10px 20px;box-shadow:inset 0 0 0 2px #ffffff12}
+.goal{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:16px}
+.goal span{white-space:nowrap;font:700 13px var(--fd);letter-spacing:.08em;padding:7px 14px;border-radius:999px;display:flex;align-items:center;gap:8px}
+.goal .g1{color:var(--n0);background:linear-gradient(180deg,#ffd05a,var(--amber))}
+.goal .g2{color:#ffd0f4;background:#2a0c34d9;box-shadow:inset 0 0 0 2px #ff4fd855}
+
+/* the pot */
+.potrow{display:flex;align-items:center;justify-content:center;gap:10px}
+.potrow svg{width:50px;height:56px;flex:none}
+.pot{display:inline-block;white-space:nowrap;font:700 78px/1 var(--fd);color:var(--amber);text-shadow:0 6px 0 var(--amber2),0 14px 40px #ff8f1f55;font-variant-numeric:tabular-nums}
+.pot.locked{color:#3a4790;text-shadow:none}
+.pot.beat{animation:beat .2s ease-out}@keyframes beat{40%{transform:scale(1.05)}}
+.pot.jump{animation:jump .45s var(--spring)}@keyframes jump{35%{transform:scale(1.18)}}
+.potl{font:700 13px var(--fd);letter-spacing:.2em;color:var(--dim);margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;min-height:24px}
+.mult{background:var(--amber);color:var(--n0);border-radius:9px;padding:1px 10px;font:700 17px var(--fd);letter-spacing:.02em;transform:rotate(-4deg);display:inline-block}
+.jumpf{position:fixed;left:50%;z-index:4;font:700 24px/1 var(--fd);color:var(--n0);background:linear-gradient(180deg,#ffd05a,var(--amber));border-radius:999px;padding:7px 16px;box-shadow:0 4px 0 var(--amber2),0 10px 24px #0008;white-space:nowrap;pointer-events:none;animation:jf .8s var(--ease) forwards;transform:translateX(-50%)}
+@keyframes jf{0%{opacity:0;transform:translate(-50%,8px) scale(.7)}15%{opacity:1;transform:translate(-50%,0) scale(1.08)}82%{opacity:1;transform:translate(-50%,-18px) scale(1)}100%{opacity:0;transform:translate(-50%,-32px) scale(.85);visibility:hidden}}
+
+/* partner chips */
+.mates{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px;min-height:46px}
+.mate{display:flex;align-items:center;gap:10px;background:#080d26d9;border-radius:999px;padding:4px 18px 4px 6px;font:700 16px var(--fd);box-shadow:inset 0 0 0 2px #22e4ff44;white-space:nowrap}
+.mate svg{width:36px;height:40px}
+.mate b{color:var(--cyan)}
+.mate.off{box-shadow:inset 0 0 0 2px #ff4fd855}.mate.off b{color:var(--soft)}
+.mate.off b{animation:mb 1.2s ease-in-out infinite}@keyframes mb{50%{opacity:.45}}
+
+/* the big button */
+.bigbtn{width:min(84vw,330px);aspect-ratio:330/300;margin-top:4px;flex:none}
+.bigbtn svg{width:100%;height:100%;overflow:visible}
+.bigbtn.on{animation:none}
+.bigbtn.idle svg{animation:breathe 1.8s ease-in-out infinite}@keyframes breathe{50%{transform:scale(1.02)}}
+.tip{font:800 15px/1.5 var(--fu);color:var(--dim);margin-top:2px}
+.tip b{color:var(--ink)}.tip .r{color:var(--mag)}
+.role{font:700 14px var(--fd);letter-spacing:.14em;padding:8px 16px;border-radius:999px;background:#0a2a44;color:#bfe9ff;box-shadow:inset 0 0 0 2px #22e4ff66}
+.role.ok{background:#0a2a22;color:var(--mint);box-shadow:inset 0 0 0 2px #5dffb066}
+.role.so{background:#2e2410;color:var(--amber);box-shadow:inset 0 0 0 2px #ffb62766}
+.stake{font:700 14px var(--fd);letter-spacing:.14em;color:var(--amber);margin-bottom:10px}
+
+/* scenes */
+.scene{width:min(88vw,346px);aspect-ratio:346/250;flex:none}
+.scene svg{width:100%;height:100%;overflow:visible}
+.tscene{width:min(80vw,312px);aspect-ratio:312/158;flex:none;margin:6px 0}
+.tscene svg{width:100%;height:100%;overflow:visible}
+.h1{font:700 30px/1.1 var(--fd);margin-top:8px}
+.h1.p{color:#ffc6ec}.h1.g{color:#ffe3a3}.h1.m{color:var(--mint)}
+.bigv{white-space:nowrap;font:700 clamp(40px,15vw,72px)/1 var(--fd);color:var(--amber);text-shadow:0 6px 0 var(--amber2),0 14px 40px #ff8f1f55;margin-top:6px;font-variant-numeric:tabular-nums}
+.bigv.m{color:var(--mint);text-shadow:0 6px 0 #0d7a4c,0 14px 40px #5dffb044}
+.bigv.lost{color:#e9b6dc;text-shadow:none;text-decoration:line-through;text-decoration-thickness:5px;text-decoration-color:#ff4fd8aa}
+.safe{margin-top:14px;display:inline-flex;align-items:center;gap:10px;background:#080d26d9;box-shadow:inset 0 0 0 2px #5dffb044;border-radius:999px;padding:9px 20px;font:700 16px var(--fd)}
+.safe b{color:var(--mint)}
+.cons{margin-top:10px;font:800 15px var(--fu);color:#ffc6ec;background:#2a0c34;border-radius:14px;padding:8px 14px}
+.who{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:12px;font:700 16px var(--fd);letter-spacing:.06em;color:var(--mag);background:#1e0a2ae6;border-radius:999px;padding:4px 18px 4px 6px;box-shadow:inset 0 0 0 2px #ff4fd855}
+.who svg{width:44px;height:52px}
+.stg{font:700 18px var(--fd);letter-spacing:.3em;color:var(--dim)}
+.stx{font:700 140px/.9 var(--fd);color:var(--amber);text-shadow:0 10px 0 var(--amber2),0 20px 60px #ff8f1f55;margin-top:12px;animation:stamp .6s var(--spring) both}
+@keyframes stamp{from{opacity:0;transform:scale(1.3)}}
+.stx.go{font-size:72px;color:var(--cyan);text-shadow:0 8px 0 #0a7a9a,0 20px 60px #22e4ff55}
+.stx.fin{font-size:82px;color:var(--mag);text-shadow:0 8px 0 #8a0d5c,0 20px 60px #ff4fd855}
+.medal{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font:700 52px var(--fd);color:var(--n0);background:#93a0d8;box-shadow:0 6px 0 #4a58a0,0 0 40px #93a0d855;animation:pop .6s var(--spring)}
+.medal.r1{background:var(--amber);box-shadow:0 6px 0 var(--amber2),0 0 50px #ffb62788}.medal.r2{background:#dfe3f5;box-shadow:0 6px 0 #8a92b8}.medal.r3{background:#d9915a;box-shadow:0 6px 0 #8a5228}
+.wpot{font:700 64px/1 var(--fd);font-variant-numeric:tabular-nums;color:#3a4790;transition:color .25s}
+.wpot.on{color:var(--amber);text-shadow:0 6px 0 var(--amber2),0 14px 40px #ff8f1f55}
+.wait{font:700 30px/1.1 var(--fd);color:var(--amber)}
+
+/* pairing (lobby): real buttons, outside the hold pad */
+.pairui{position:fixed;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:calc(var(--st) + 70px) 20px calc(var(--sb) + 20px)}
+.pairui h1{font:700 36px/1.05 var(--fd)}
+.pairui h1 em{font-style:normal;color:var(--cyan)}
+.bigb{width:min(86vw,340px);height:66px;border-radius:999px;font:700 20px/1 var(--fd);letter-spacing:.08em;cursor:pointer;background:#080d26e6;color:#fff;border:0;box-shadow:inset 0 0 0 2px #22e4ff55,0 10px 24px #0007;transition:transform .12s}
+.bigb:active{transform:scale(.98)}
+.nmin{width:min(86vw,340px);height:62px;border-radius:18px;border:0;background:#080d26e6;box-shadow:inset 0 0 0 2px #22e4ff66;color:#fff;font:700 28px/1 var(--fd);text-align:center;letter-spacing:.02em;outline:none}
+.nmin:focus{box-shadow:inset 0 0 0 3px var(--cyan),0 0 24px #22e4ff44}.nmin::placeholder{color:#5a6699}
+.avg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:min(88vw,340px)}
+.avb{aspect-ratio:1/1.05;border-radius:16px;border:0;background:#0b1236e6;box-shadow:inset 0 0 0 2px #2a3570;cursor:pointer;padding:6px 4px 0;display:grid;place-items:end center;transition:transform .1s}
+.avb svg{width:100%;height:100%;overflow:hidden;pointer-events:none}.avb{overflow:hidden}.avb.on{background:#123a4a;box-shadow:inset 0 0 0 3px var(--cyan),0 0 18px #22e4ff55;transform:scale(1.05)}
+.bigb.go{background:linear-gradient(180deg,#7ff3ff,var(--cyan));color:var(--n0);box-shadow:0 6px 0 #0a7a9a,0 14px 30px #22e4ff44}
+.linkb{background:none;border:0;color:var(--dim);font:700 13px var(--fd);letter-spacing:.14em;cursor:pointer;padding:12px;text-decoration:underline;text-underline-offset:4px}
+.code{font:700 96px/1 var(--fd);letter-spacing:.14em;color:var(--cyan);text-shadow:0 0 40px #22e4ff66;padding:14px 22px 14px 36px;border-radius:28px;background:#080d26e6;box-shadow:inset 0 0 0 2px #22e4ff66;font-variant-numeric:tabular-nums}
+.slots{display:flex;gap:10px}.slots b{width:66px;height:80px;border-radius:18px;background:#080d26e6;box-shadow:inset 0 0 0 2px #22e4ff55;display:grid;place-items:center;font:700 46px/1 var(--fd);color:var(--cyan)}
+.slots b:empty{box-shadow:inset 0 0 0 2px #ffffff22}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(86vw,300px)}
+.keys button{height:58px;border-radius:18px;border:0;background:#141d4a;font:700 28px/1 var(--fd);cursor:pointer;box-shadow:inset 0 -4px 0 #0a1036,inset 0 0 0 2px #22e4ff1c;transition:transform .08s}
+.keys button:active{transform:scale(.95);background:#1d2a66}
+.keys button[data-a]{font:700 14px/1 var(--fd);letter-spacing:.1em;color:var(--dim)}
+.okc{font:700 15px var(--fd);color:var(--mint);letter-spacing:.18em}
+.hint{font:800 15px/1.45 var(--fu);color:var(--dim)}
+.hint b{color:var(--ink);font-family:var(--fd);font-size:20px}
+.err{color:var(--soft);font:800 15px/1.3 var(--fu);min-height:20px}
+/* PIN entry */
+.form{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px}
+.logo{font:700 86px/1 var(--fd);letter-spacing:.02em;display:flex;align-items:center}
+.logo svg{width:66px;height:76px;margin:0 2px}
+.pin-input{width:min(80vw,300px);font:700 44px/1 var(--fd);text-align:center;letter-spacing:.16em;background:#080d26e6;border:0;box-shadow:inset 0 0 0 2px #22e4ff44;border-radius:22px;padding:16px 8px;color:#fff;outline:none;transition:box-shadow .2s}
+.pin-input:focus{box-shadow:inset 0 0 0 3px var(--cyan),0 0 0 6px #22e4ff22}
+.cta{background:linear-gradient(180deg,#7ff3ff,var(--cyan));color:var(--n0);border:0;border-radius:999px;height:64px;padding:0 60px;font:700 28px/1 var(--fd);letter-spacing:.12em;cursor:pointer;box-shadow:0 6px 0 #0a7a9a,0 14px 30px #22e4ff44}
+.prac{position:fixed;top:calc(var(--st) + 60px);left:50%;transform:translateX(-50%);white-space:nowrap;font:700 12px var(--fd);letter-spacing:.16em;color:#bfe9ff;padding:6px 12px;border-radius:999px;box-shadow:inset 0 0 0 2px #22e4ff66;background:#0a2a44;z-index:3;pointer-events:none}
+.conn{position:fixed;bottom:calc(var(--sb) + 12px);left:50%;transform:translateX(-50%);font:700 12px var(--fd);letter-spacing:.14em;color:#fff;background:#2a0c34;box-shadow:inset 0 0 0 2px #ff4fd866;border-radius:999px;padding:8px 14px;z-index:6;pointer-events:none}
+/* acts (16 Nov): the act card, SAFE or BOLD, the marks, the awards */
+.pact{font:700 15px var(--fd);letter-spacing:.26em;color:var(--n0);background:linear-gradient(180deg,#7ef4ff,var(--cyan));padding:6px 16px;border-radius:999px}
+.ptitle{font:700 32px/1.08 var(--fd);margin:12px 0 4px}
+.ptitle span{color:var(--amber)}
+.pq{font:800 17px/1.35 var(--fu);color:#d9d6f5;margin:2px 0 6px}
+.opt{width:min(88vw,340px);border:0;border-radius:24px;padding:14px 18px;display:flex;align-items:center;gap:14px;text-align:left;position:relative;cursor:pointer;color:var(--ink);transition:transform .12s,opacity .2s}
+.opt .ic{font-size:38px;width:52px;text-align:center;flex:none}
+.opt .ot{display:block;font:700 30px var(--fd);letter-spacing:.04em}
+.opt .od{display:block;font:800 15px/1.3 var(--fu);color:#d9d6f5;margin-top:2px}
+.opt.safe{background:#0a2a3a;box-shadow:inset 0 0 0 3px #22e4ff66}.opt.safe .ot{color:#bff8ff}
+.opt.bold{background:linear-gradient(180deg,#3a1a06,#2a1204);box-shadow:inset 0 0 0 3px #ff9a3c88}.opt.bold .ot{color:#ffb627}
+.opt.picked{transform:scale(1.03);box-shadow:inset 0 0 0 4px #ffb627,0 0 40px #ffb62766}
+.opt.safe.picked{box-shadow:inset 0 0 0 4px #bff8ff,0 0 40px #22e4ff66}
+.opt.dim{opacity:.4}
+.opt .tick{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:#fff;color:var(--n0);display:grid;place-items:center;font:700 20px var(--fd)}
+.ctime{display:flex;align-items:center;gap:10px;font:700 14px var(--fd);letter-spacing:.16em;color:var(--dim)}
+.ctime b{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font:700 20px var(--fd);color:var(--amber);box-shadow:inset 0 0 0 3px var(--amber)}
+.pres{width:min(88vw,340px);border-radius:24px;padding:18px 16px;animation:pop .6s var(--spring) both}
+.pres.bold{background:linear-gradient(180deg,#ffcf5a,#ff8a1f);color:#2a1200;box-shadow:0 8px 0 #a34a00,0 0 50px #ff9a3c55}
+.pres.psafe{background:#0a2a3a;color:#bff8ff;box-shadow:inset 0 0 0 3px #22e4ff88,0 0 50px #22e4ff33}
+.pres.spot{background:linear-gradient(180deg,#7dffc4,#2ed39a);color:#03241a;box-shadow:0 8px 0 #138a62,0 0 50px #5dffb055}
+.pres.early{background:#2a2410;color:#ffe08a;box-shadow:inset 0 0 0 3px #ffb62777}
+.pres.tap{background:#2a0c34;color:#ffc6ec;box-shadow:inset 0 0 0 3px #ff4fd877}
+.pres .rt1{font:700 34px var(--fd);letter-spacing:.03em}
+.pres .rt2{font:800 16px/1.35 var(--fu);margin-top:4px}
+.pairc{display:flex;gap:10px;width:min(88vw,340px)}
+.pairc .pc{flex:1;border-radius:18px;background:#080d26e6;box-shadow:inset 0 0 0 2px #2a3570;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;font:700 14px var(--fd);letter-spacing:.06em;color:var(--dim);min-width:0}
+.pairc .pc svg{width:36px;height:42px}
+.pairc .pc b{font:700 20px var(--fd);letter-spacing:.02em;white-space:nowrap}
+.pairc .pc b.bo{color:var(--amber)}.pairc .pc b.sa{color:#bff8ff}.pairc .pc b.wt{color:var(--dim)}
+.mode{display:inline-block;font:700 13px var(--fd);letter-spacing:.08em;padding:3px 10px;border-radius:9px;vertical-align:middle}
+.mode.bold{background:linear-gradient(180deg,#ffcf5a,#ff8a1f);color:#2a1200}.mode.safe{background:#0a2a3a;color:#bff8ff;box-shadow:inset 0 0 0 2px #22e4ff66}
+.zrow{width:min(88vw,340px);display:flex;align-items:center;gap:12px;border-radius:18px;padding:10px 14px;margin-top:8px;text-align:left;font:800 14px/1.25 var(--fu);color:#d9d6f5}
+.zrow .ic{font-size:26px;width:34px;text-align:center}.zrow b{display:block;font:700 19px var(--fd)}
+.zrow.e{background:#2a2410}.zrow.e b{color:#ffe08a}.zrow.w{background:#0c2a24;box-shadow:inset 0 0 0 2px #5dffb088}.zrow.w b{color:var(--mint)}.zrow.a{background:#2a0c34}.zrow.a b{color:var(--soft)}.zrow.r{background:#0a2a22}.zrow.r b{color:var(--mint)}
+.trophy{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:54px;background:#5dffb022;box-shadow:inset 0 0 0 3px #5dffb088,0 0 50px #5dffb044;animation:pop .6s var(--spring)}
+.won{font:700 28px/1.1 var(--fd);color:var(--mint);margin-top:6px}
+.won.bank{color:var(--amber)}.won.never{color:#bff8ff}.won.lbs,.won.revenue{color:var(--amber)}
+/* LAST BUSINESS STANDING (18 Nov): CONTAIN IT, closed hold-along, the company report */
+.cbar{width:min(88vw,340px);height:22px;border-radius:999px;background:#0a1036;box-shadow:inset 0 0 0 2px #ffffff18;overflow:hidden;margin-top:8px;position:relative}
+.cbar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:999px;background:linear-gradient(90deg,#ff4fd8,#ffb627);transition:width .1s linear}
+.cbar.ok i{background:linear-gradient(90deg,#2ed39a,#5dffb0)}
+.cneed{font:800 15px var(--fu);color:var(--dim);margin-top:6px}.cneed b{color:var(--ink)}
+.ccount{font:700 44px/1 var(--fd);color:var(--amber);margin-top:2px}
+.closedtag{display:inline-block;margin-top:6px;font:700 14px var(--fd);letter-spacing:.14em;padding:5px 12px;border-radius:10px;background:#2a0c34;color:#ffc6ec;box-shadow:inset 0 0 0 2px #ff4fd866}
+.hold-along{width:min(88vw,340px);margin-top:10px;border-radius:18px;padding:10px 14px;background:#0b1236e6;box-shadow:inset 0 0 0 2px #22e4ff44;font:800 15px/1.35 var(--fu);text-align:center}
+.hold-along b{color:var(--cyan)}
+.rep{width:min(92vw,350px);border-radius:24px;padding:14px 16px 12px;background:linear-gradient(180deg,#121a4a,#0a1036);box-shadow:inset 0 0 0 2px #22e4ff44,0 14px 30px #0008;text-align:left}
+.rep.closed{box-shadow:inset 0 0 0 2px #ff4fd855,0 14px 30px #0008}
+.rep .rk{font:800 11px var(--fu);letter-spacing:.2em;color:var(--dim)}
+.rep .rn{font:700 22px/1.1 var(--fd);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rep .rr{display:flex;align-items:center;justify-content:space-between;margin-top:6px;gap:6px}
+.rep .st{font:700 13px var(--fd);letter-spacing:.1em;padding:4px 10px;border-radius:9px;background:#0b2a22;color:var(--mint);box-shadow:inset 0 0 0 2px #5dffb066}
+.rep.closed .st{background:#2a0c34;color:#ffc6ec;box-shadow:inset 0 0 0 2px #ff4fd866}
+.rep .rank{font:700 22px var(--fd);color:var(--amber);white-space:nowrap;flex:none;margin-left:8px}.rep .rank small{font-size:13px;color:var(--dim)}
+.rep .rv{font:800 11px var(--fu);letter-spacing:.2em;color:var(--dim);margin-top:8px}
+.rep .rvv{font:700 40px/1 var(--fd);color:var(--amber);text-shadow:0 3px 0 var(--amber2)}
+.rep .stats{display:flex;gap:8px;margin-top:10px}
+.rep .stats .s{flex:1;border-radius:14px;background:#080d26;box-shadow:inset 0 0 0 2px #2a3570;padding:6px 4px;text-align:center}
+.rep .stats b{display:block;font:700 22px var(--fd)}.rep .stats b.g{color:var(--mint)}.rep .stats b.m{color:#ff8fd8}
+.rep .stats span{font:800 10px var(--fu);letter-spacing:.14em;color:var(--dim)}
+.rep .bar{height:8px;border-radius:999px;background:#1a2150;margin-top:10px;overflow:hidden}.rep .bar i{display:block;height:100%;background:linear-gradient(90deg,#22e4ff,#5dffb0)}
+.rep .bl{display:flex;justify-content:space-between;font:800 10px var(--fu);letter-spacing:.14em;color:var(--dim);margin-top:4px}
+.rbldg{width:120px;height:150px;margin-top:6px}.rbldg svg{width:100%;height:100%;overflow:visible}
+.showhint{font:800 15px var(--fu);color:var(--dim);margin-top:4px}.showhint b{color:var(--cyan)}
+.bitbyl{font:800 13px var(--fu);color:#6f7cb8;margin-top:6px}.bitbyl a{color:var(--cyan);text-decoration:none}
+/* RANSOMWARE (16 Nov prototype): the duel. The whole screen is the tap pad while the mash runs. */
+.rtag{display:inline-flex;align-items:center;gap:8px;font:700 15px var(--fd);letter-spacing:.2em;color:#ffd0f4;background:#2a0c34;box-shadow:inset 0 0 0 2px #ff4fd866;border-radius:999px;padding:6px 16px}
+.rtag svg{width:16px;height:19px}
+.rlock{width:96px;height:112px;margin:10px auto 4px;filter:drop-shadow(0 0 22px #ff4fd8aa);animation:rl 1.6s ease-in-out infinite}
+.rlock svg{width:100%;height:100%}@keyframes rl{50%{transform:translateY(-5px)}}
+.rcount{font:700 150px/1 var(--fd);color:var(--amber);text-shadow:0 10px 0 var(--amber2),0 20px 60px #ff8f1f55;animation:stamp .45s var(--spring) both}
+.rme{font:700 92px/1 var(--fd);color:var(--ink);font-variant-numeric:tabular-nums;margin-top:2px}
+.rme.bump{animation:rb .12s ease-out}@keyframes rb{50%{transform:scale(1.08)}}
+.rbars{width:min(88vw,340px);display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.rb{display:flex;align-items:center;gap:10px;font:700 14px var(--fd);letter-spacing:.06em;text-align:left}
+.rb span{width:96px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rb .tr{flex:1;height:18px;border-radius:999px;background:#0a1036;box-shadow:inset 0 0 0 2px #ffffff14;overflow:hidden}
+.rb .tr i{display:block;height:100%;width:0;border-radius:999px;transition:width .12s linear}
+.rb.us .tr i{background:linear-gradient(90deg,#c9a200,var(--amber))}.rb.them .tr i{background:linear-gradient(90deg,#3a4790,#93a0d8)}
+.rb.us span{color:var(--amber)}
+.rvs{font:700 24px/1.2 var(--fd);letter-spacing:.04em;color:#fff;margin-top:8px;max-width:90vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rvs span{color:#ff8fe0;margin:0 8px;font-size:18px}
+.tapbtn{width:min(78vw,300px);aspect-ratio:330/300;flex:none;margin-top:6px}
+.tapbtn svg{width:100%;height:100%;overflow:visible}
+.tapbtn.hit svg{animation:th .1s ease-out}@keyframes th{50%{transform:scale(.95)}}
+.tapbtn.wait{opacity:.45;filter:saturate(.6)}
+@media (max-height:700px){.bigbtn{width:min(70vw,270px)}.pot{font-size:64px}.scene{width:min(74vw,290px)}.mates{margin-top:8px}}
+.irp{margin:6px 0 10px;display:flex;flex-direction:column;gap:6px;max-height:300px;overflow:auto;text-align:left}
+.irp .e{border-radius:12px;background:#0b1130;box-shadow:inset 0 0 0 1px #ffffff22;padding:7px 10px}
+.irp .e b{font:700 11px var(--fd,sans-serif);letter-spacing:.12em;color:#0a0f2c;background:#ffc94d;border-radius:5px;padding:1px 6px}
+.irp .e i{display:block;font-style:normal;font-weight:800;font-size:13px;margin-top:3px;color:#fff}
+.irp .e code{display:block;font:600 12px/1.35 ui-monospace,monospace;color:#bfe9ff;white-space:pre-wrap}
+.irp .e em{display:block;font-style:normal;font-size:12px;color:#5dffb0;margin-top:3px}
+</style>
+</head>
+<body>
+<div class="bg"><div class="sky"></div><div class="grid"></div><svg class="pworld" id="pworld" viewBox="0 0 390 844" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg></div>
+<div class="pscreen" id="pad"></div>
+<div class="pairui" id="pairui" hidden></div>
+<div class="pairui" id="choiceui" hidden></div>
+<div class="ptop" id="top" hidden><span class="me" id="me"></span><span class="bankt">REVENUE<b id="bank">R0</b></span></div>
+<div class="prac" id="prac" hidden>PRACTICE · DOESN'T COUNT</div>
+<div class="form" id="form" hidden>
+  <div class="logo" id="flogo"></div>
+  <div class="psm" style="margin:0">GAME PIN FROM THE BIG SCREEN</div>
+  <input id="pinInput" class="pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" aria-label="Game PIN">
+  <button class="cta" id="joinBtn" type="button">JOIN</button>
+  <div class="err" id="err"></div>
+</div>
+<div class="conn" id="conn" hidden>RECONNECTING…</div>
+<script type="module">
+import { createSocket } from '/client/net.js';
+import * as A from '/hold/art.js';
+const $ = (s) => document.querySelector(s);
+const pad = $('#pad');
+const potAt = (t) => Math.round(600 * t + 200 * t * t); // server/hold/rules.js
+const TOKEN_KEY = 'hold_token';
+const store = (fn) => { try { return fn(localStorage); } catch { return null; } };
+let token = store((s) => s.getItem(TOKEN_KEY));
+let pin = new URLSearchParams(location.search).get('pin') || null;
+let Y = null, off = 0, view = '', down = false, lastBonus = 0, nextBeat = 0, frozen = null, myName = '', myAv = null;
+let pairMode = 'menu', typed = '', pairErr = '', pairView = '';
+// 19 Nov: the name + character step (lobby). profOpen: showing it; profDraft/profAv: what's typed/picked; profErr: the server's no.
+let profOpen = null, profDraft = null, profAv = null, profErr = '';
+const now = () => Date.now() + off;
+function vib(p) { try { navigator.vibrate && navigator.vibrate(p); } catch {} }
+$('#pworld').innerHTML = A.world(390, 844, true);
+$('#flogo').innerHTML = A.logo();
+
+const sock = createSocket(onMsg, '/hold/ws');
+sock.onopen = () => sock.send({ t: 'join', role: 'player', token: token || undefined, pin: pin || undefined });
+sock.onstatus = (s) => { $('#conn').hidden = s === 'online'; };
+
+function onMsg(m) {
+  if (m.t === 'welcome') { token = m.token; store((s) => s.setItem(TOKEN_KEY, token)); $('#form').hidden = true; $('#top').hidden = false; myName = m.name; drawMe('hold'); if (m.pin) history.replaceState(null, '', '/hold'); }
+  else if (m.t === 'need_join') { token = null; store((s) => s.removeItem(TOKEN_KEY)); Y = null; view = ''; if (m.reason === 'reset') pin = null; pin ? sock.send({ t: 'join', role: 'player', pin }) : pinScreen(m.reason === 'reset' ? 'The host started a new lobby. Enter the new PIN.' : ''); }
+  else if (m.t === 'pin_bad') { pin = null; pinScreen(m.message); }
+  else if (m.t === 'error') { $('#err').textContent = m.message; }
+  else if (m.t === 'pair_bad') { pairErr = m.message; typed = ''; drawPair(true); }
+  else if (m.t === 'profile') { if (profSent) { profSent = false; if (m.ok) { profOpen = false; profErr = ''; profDraft = null; } else profErr = m.message || 'Pick another name.'; } if (Y) drawPair(true); }
+  else if (m.t === 'you') { off = m.you.now - Date.now(); const prev = Y; Y = m.you; myName = Y.name || myName; myAv = Number.isInteger(Y.av) ? Y.av : null; draw(prev); }
+}
+function drawMe(mood) { const k = myName + mood + myAv; const e = $('#me'); if (e.dataset.k === k) return; e.dataset.k = k; e.innerHTML = `${A.avatar(A.lookOf({ name: myName, av: myAv }), mood)}<span>${esc(myName.toUpperCase())}</span>`; }
+function pinScreen(msg) {
+  $('#form').hidden = false; $('#top').hidden = true; $('#err').textContent = msg || '';
+  setTimeout(() => $('#pinInput').focus(), 50);
+}
+const submitPin = () => { const v = $('#pinInput').value.trim(); if (!/^\d{6}$/.test(v)) { $('#err').textContent = 'The PIN is 6 digits.'; return; } pin = v; sock.send({ t: 'join', role: 'player', pin }); };
+$('#joinBtn').addEventListener('click', submitPin);
+$('#pinInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') submitPin(); });
+
+// ---- screens ----
+function screen(html, mood = 'hold', caught = false) { pad.className = 'pscreen'; pad.innerHTML = html; drawMe(mood); document.body.classList.toggle('caught', caught); }
+function viewKey() {
+  const y = Y; if (!y) return '';
+  const k = [y.phase, y.index, y.state, y.solo ? 'solo' : '', y.practice ? 'p' : '', y.away ? 'away' : ''];
+  if (y.phase === 'walk') k.push(y.walk.step, down || y.down ? 'down' : 'up', y.keysIn ? 'in' : '');
+  if (y.phase === 'stage') k.push(y.stage.kind, y.stage.act, y.stage.locked, y.mode);
+  if (y.phase === 'ready') k.push(down || y.down ? 'down' : 'up', y.keysIn ? 'in' : '');
+  if (y.phase === 'play' && (y.state === 'hold' || y.state === 'wait')) k.push(down ? 'down' : 'letting');
+  if (y.phase === 'crash') k.push(y.outcome, y.mark, y.contain ? y.contain.step + y.contain.role + (y.contain.result || '') : '');
+  k.push(y.sync ? 'sync' : '', y.backup ? 'b' + y.backup.have : '', y.restored ? 'r' + (y.restored.now ? 'n' : '') : '');
+  if (y.phase === 'ransom' && y.ransom) k.push(y.ransom.duel, y.ransom.step, y.ransom.role, y.ransom.result ? y.ransom.result.kind : '');
+  return k.join(':');
+}
+// A teammate's short name: the first word, or the full name when two in the team share it (COBALT HERON vs COBALT KOI).
+const first = (n) => { const f = (n || '').split(' ')[0].toUpperCase(); const team = Y ? [Y.name, ...((Y.mates || []).map((m) => m.name))] : []; return team.filter((x) => x.split(' ')[0].toUpperCase() === f).length > 1 ? (n || '').toUpperCase() : f; };
+const names = (a) => (a || []).map(first).join(' & ');
+// Rand, South African style: R42 180.
+const money = (v) => 'R' + String(Math.round(Number(v) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0');
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// Your team as a drawing: you first, then your partners. on: whose key is in.
+function teamArt(y, st, opts = {}) {
+  const ms = [{ c: A.lookOf(y, myName), on: opts.meOn ?? true }, ...((y.mates || []).map((m) => ({ c: A.lookOf(m), on: opts.mateOn ?? !!m.down })))];
+  return `<div class="tscene">${A.team(ms, st)}</div>`;
+}
+
+// ---- pairing (lobby, or anyone still unpaired between messages) ----
+function pairing() { return Y && Y.phase !== 'play' && Y.phase !== 'crash' && (Y.phase === 'lobby' || !Y.pair) && Y.phase !== 'final'; }
+function drawPair(force) {
+  const ui = $('#pairui'), y = Y;
+  if (!pairing()) { ui.hidden = true; pairView = ''; return false; }
+  ui.hidden = false;
+  if (profOpen === null) profOpen = y.phase === 'lobby' && !y.named; // first time in: ask once
+  if (profOpen && y.phase === 'lobby') {
+    if (profDraft === null) profDraft = ''; if (profAv === null) profAv = Number.isInteger(y.av) ? y.av : null;
+    const key = ['prof', profAv, profErr].join('|');
+    if (key === pairView && !force) return true;
+    pairView = key;
+    const grid = A.LOOKS.map((L, i) => `<button type="button" class="avb${profAv === i ? ' on' : ''}" data-av="${i}" aria-label="${esc(L.name)}">${A.avatar(L.c + '|' + L.a, profAv === i ? 'happy' : 'idle')}</button>`).join('');
+    ui.innerHTML = `<div class="psm" style="margin:0 0 4px;letter-spacing:.2em">WHO ARE YOU?</div>`
+      + `<input id="profName" class="nmin" type="text" inputmode="text" autocomplete="nickname" autocapitalize="words" spellcheck="false" maxlength="12" placeholder="${esc(y.name)}" value="${esc(profDraft)}">`
+      + `<div class="err">${esc(profErr)}</div><div class="psm" style="margin:4px 0 6px;letter-spacing:.2em">PICK YOUR CHARACTER</div><div class="avg">${grid}</div>`
+      + `<button class="bigb go" type="button" data-p="save" style="margin-top:12px">THAT'S ME</button><button class="linkb" type="button" data-p="skip">SKIP · STAY ${esc(y.name.toUpperCase())}</button>`;
+    const inp = $('#profName'); inp.addEventListener('input', () => { profDraft = inp.value; profErr = ''; const e = ui.querySelector('.err'); if (e) e.textContent = ''; });
+    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); saveProfile(); } });
+    return true;
+  }
+  if (y.pair) pairMode = 'menu';
+  const key = [y.pair ? y.pair.mates.join() : '', y.code, pairMode, typed, pairErr].join('|');
+  if (key === pairView && !force) return true;
+  pairView = key;
+  let h;
+  if (y.pair) {
+    const ms = [{ c: A.lookOf(y), on: true }, ...y.pair.mates.map((n, i) => ({ c: A.lookOf({ name: n, av: (y.pair.avs || [])[i] }), on: true }))];
+    h = `<div class="okc">✓ YOUR TEAM</div><div class="tscene">${A.team(ms, 'banked')}</div><h1>${esc(first(y.name))} & <em>${esc(names(y.pair.mates))}</em> LTD</h1><div class="hint">YOUR COMPANY: YOU BOTH HOLD.<br>ONE LETS GO = YOU BOTH LOCK IN.</div>`
+      + (y.code && y.pair.size < 3 ? `<div class="hint" style="margin-top:10px">ODD ONE OUT NEXT TO YOU?<br>THEY CAN TYPE YOUR CODE <b>${esc(y.code)}</b></div>` : '')
+      + (y.phase === 'lobby' ? `<button class="linkb" type="button" data-a="unpair">NOT THEM? UNPAIR</button><button class="linkb" type="button" data-p="edit">CHANGE MY NAME OR CHARACTER</button>` : '')
+      + `<div class="look">LOOK UP AT THE BIG SCREEN ↑</div>`;
+  } else if (pairMode === 'show') {
+    h = `<div class="psm" style="margin:0;letter-spacing:.2em">YOUR CODE</div><div class="code">${esc(y.code || '···')}</div><div class="hint">YOUR NEIGHBOUR TYPES IT<br>ON THEIR PHONE</div><button class="linkb" type="button" data-a="menu">BACK</button>`;
+  } else if (pairMode === 'enter') {
+    const sl = [0, 1, 2].map((i) => `<b>${esc(typed[i] || '')}</b>`).join('');
+    h = `<div class="psm" style="margin:0;letter-spacing:.2em">THEIR CODE</div><div class="slots">${sl}</div><div class="err">${esc(pairErr)}</div><div class="keys">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `<button type="button" data-k="${n}">${n}</button>`).join('')}<button type="button" data-a="menu">BACK</button><button type="button" data-k="0">0</button><button type="button" data-a="del">⌫</button></div>`;
+  } else {
+    const ms = [{ c: A.lookOf(y), on: false }, { c: '#3a4790', on: false }];
+    h = `<div class="tscene">${A.team(ms, 'idle')}</div><h1>PAIR WITH THE PERSON<br><em>NEXT TO YOU</em></h1><div class="hint" style="margin:0 0 6px">ONE SHOWS, THE OTHER TYPES</div><button class="bigb go" type="button" data-a="show">SHOW MY CODE</button><button class="bigb" type="button" data-a="enter">ENTER THEIR CODE</button><div class="hint" style="margin-top:8px">NOBODY NEXT TO YOU? YOU'LL PLAY SOLO</div>${y.phase === 'lobby' ? `<button class="linkb" type="button" data-p="edit">CHANGE MY NAME OR CHARACTER</button>` : ''}`;
+  }
+  ui.innerHTML = GOAL + h;
+  drawMe('hold');
+  return true;
+}
+$('#pairui').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.av !== undefined) { profAv = +b.dataset.av; profErr = ''; drawPair(true); return; }
+  if (b.dataset.p === 'save') { saveProfile(); return; }
+  if (b.dataset.p === 'skip') { if (profAv !== null) sock.send({ t: 'profile', av: profAv }); else sock.send({ t: 'profile', name: '' }); profOpen = false; drawPair(true); return; }
+  if (b.dataset.p === 'edit') { profOpen = true; profDraft = null; profErr = ''; drawPair(true); return; }
+  if (b.dataset.k) { if (typed.length < 3) typed += b.dataset.k; pairErr = ''; if (typed.length === 3) sock.send({ t: 'pair', code: typed }); }
+  else if (b.dataset.a === 'del') { typed = typed.slice(0, -1); pairErr = ''; }
+  else if (b.dataset.a === 'unpair') sock.send({ t: 'unpair' });
+  else if (b.dataset.a) { pairMode = b.dataset.a; typed = ''; pairErr = ''; }
+  drawPair(true);
+});
+
+function saveProfile() {
+  const v = (profDraft || '').replace(/\s+/g, ' ').trim();
+  if (v && (v.length < 2 || v.length > 12)) { profErr = '2 to 12 characters.'; drawPair(true); return; }
+  sock.send({ t: 'profile', name: v || '', av: profAv });
+  profSent = true;
+}
+let profSent = false;
+// ---- SAFE or BOLD (acts 2 and 3): real buttons over the hold pad, while the act card's choice is open ----
+const actTitle = (name) => { const w = (name || '').split(' '), h = Math.floor(w.length / 2); return esc(w.slice(0, h).join(' ')) + (h ? ' ' : '') + `<span>${esc(w.slice(h).join(' '))}</span>`; };
+const pickLabel = (p) => (p === 'bold' ? '🔥 BOLD' : p === 'safe' ? '🛡 SAFE' : 'choosing…');
+function choosing() { const y = Y; return y && y.phase === 'stage' && y.stage && y.stage.kind === 'act' && y.stage.choice && !y.stage.locked && y.pair; }
+// The pair's result once every member has picked: BOLD (all bold), or SAFE (agreed, or split).
+function pairResult(y, pick) {
+  const picks = [y.pick, ...(y.mates || []).map((m) => m.pick)];
+  if (pick === 'bold') return `<div class="pres bold"><div class="rt1">🔥 BOLD · ×2</div><div class="rt2">${y.solo ? 'Everything this act pays double.' : 'You agreed. Everything this act pays double.'}</div></div>`;
+  return `<div class="pres psafe"><div class="rt1">🛡 SAFE</div><div class="rt2">${picks.includes('bold') && !y.solo ? "You didn't agree, so you play it safe." : 'Caught this act? You keep half.'}</div></div>`;
+}
+let choiceView = '';
+function drawChoice() {
+  const ui = $('#choiceui');
+  if (!choosing()) { if (!(Y && (Y.phase === 'quiz' || Y.phase === 'hot'))) ui.hidden = true; choiceView = ''; return false; }
+  ui.hidden = false;
+  const y = Y, g = y.stage, mk = [g.act, y.pick, y.teamPick, (y.mates || []).map((m) => m.pick).join()].join('|');
+  if (mk !== choiceView) {
+    choiceView = mk;
+    const opt = (p, ic, t, d) => `<button class="opt ${p}${y.pick === p ? ' picked' : y.pick ? ' dim' : ''}" type="button" data-p="${p}"><span class="ic">${ic}</span><span><span class="ot">${t}</span><span class="od">${d}</span></span>${y.pick === p ? '<span class="tick">✓</span>' : ''}</button>`;
+    const mates = (y.mates || []).map((m) => `<div class="pc">${A.avatar(A.lookOf(m), m.pick ? 'happy' : 'idle', -1)}${esc(first(m.name))}<b class="${m.pick === 'bold' ? 'bo' : m.pick === 'safe' ? 'sa' : 'wt'}">${pickLabel(m.pick)}</b></div>`).join('');
+    ui.innerHTML = `<div class="pact">ACT ${g.act}</div><div class="ptitle">${actTitle(g.name)}</div><div class="pq">${y.solo ? 'Pick one:' : `Agree with ${esc(names((y.mates || []).map((m) => m.name)))}:`}</div>`
+      + opt('safe', '🛡', 'SAFE', 'Caught? You keep half.') + opt('bold', '🔥', 'BOLD', 'Everything this act pays ×2.')
+      + (y.teamPick && y.teamPick !== 'choosing' ? pairResult(y, y.teamPick) : mates ? `<div class="pairc">${mates}</div>` : '')
+      + `<div class="ctime"><b id="csec">10</b>SECONDS TO CHOOSE</div>`;
+    drawMe(y.pick ? 'happy' : 'hold');
+  }
+  const c = $('#csec'); if (c) c.textContent = Math.max(0, Math.ceil((g.choiceEndsAt - now()) / 1000));
+  return true;
+}
+$('#choiceui').addEventListener('click', (e) => {
+  const q = e.target.closest('button[data-q]'); if (q && !q.disabled) { vib(12); sock.send({ t: 'answer', pick: +q.dataset.q }); return; }
+  const h = e.target.closest('button[data-hot]'); if (h && !h.disabled) { vib(12); sock.send({ t: 'hot', pick: h.dataset.hot }); return; }
+  const hp = e.target.closest('button[data-hp]'); if (hp && !hp.disabled) { vib(12); sock.send({ t: 'hot', pick: +hp.dataset.hp }); return; }
+  const b = e.target.closest('button[data-p]'); if (!b) return; vib(12); sock.send({ t: 'choose', pick: b.dataset.p });
+});
+
+// ---- HOT FILE (19 Nov): the infected file lands on the most-breached company. Holders agree: PASS it up or DEFUSE it
+// (a puzzle). Everyone else watches the TV. A defuse = HERO.
+let hotView = '';
+const HOTL = ['A', 'B', 'C'];
+function drawHotUi() {
+  const ui = $('#choiceui'), y = Y, T = y && y.phase === 'hot' && y.hot;
+  if (!T) { if (hotView) { hotView = ''; if (!choosing() && !(y && y.phase === 'quiz')) ui.hidden = true; } return false; }
+  ui.hidden = false;
+  const mk = JSON.stringify([T.step, T.role, T.holder && T.holder.id, T.mine, T.mates, T.split, T.result && T.result.kind, T.passes]);
+  if (mk !== hotView) {
+    hotView = mk;
+    const H = T.holder || {}, tag = '<div class="qhd" style="color:#ff4fd8">☣ HOT FILE · LATERAL MOVEMENT</div>';
+    const res = T.result;
+    if (T.step === 'result' && res) {
+      const mine = T.role === 'holder' || (res.team && y.pair && res.team.id === y.pair.id);
+      if (res.kind === 'hero') { if (mine) vib([30, 40, 30, 40, 30]); ui.innerHTML = `${tag}<div class="h1 m" style="margin-top:6px">🦸 ${mine ? 'YOU DEFUSED IT' : esc(res.team.label) + ' DEFUSED IT'}</div>${mine ? `<div class="bigv m">+${money(res.bonus)}</div><div class="psm">HERO badge for the rest of the game</div>` : '<div class="psm">They saved the market.</div>'}${res.why ? `<div class="qwhy2">${esc(res.why)}</div>` : ''}<div class="look">LOOK UP ↑</div>`; drawMe(mine ? 'happy' : 'idle'); return true; }
+      if (mine) vib(200);
+      ui.innerHTML = `${tag}<div class="h1 p" style="margin-top:6px">💥 ${mine ? 'IT WENT OFF ON YOU' : 'IT WENT OFF ON ' + esc(res.team.label)}</div>${res.amount ? `<div class="bigv lost">−${money(res.amount)}</div>` : ''}<div class="psm">${res.how === 'wrong' ? 'Wrong answer.' : res.how === 'timeout' ? 'Out of time.' : res.how === 'took' ? 'They took the hit.' : 'Nowhere left to pass it.'} 25% of revenue.</div>${res.why ? `<div class="qwhy2">${esc(res.why)}</div>` : ''}<div class="look">LOOK UP ↑</div>`;
+      drawMe(mine ? 'sad' : 'idle'); return true;
+    }
+    if (T.role !== 'holder') {
+      const what = T.step === 'puzzle' ? 'is trying to <b>defuse it</b>' : T.step === 'choose' ? 'is deciding: <b>pass it or defuse it</b>' : T.step === 'passed' ? 'just got it passed to them' : 'got the infected file';
+      const nextMe = T.step !== 'puzzle' && T.canPass;
+      ui.innerHTML = `${tag}<div class="h1" style="margin-top:8px">${esc(H.label || '')}</div><div class="psm">${what}.</div>${nextMe ? '<div class="psm">If they pass it, it moves <b>up the market</b>: it could be you next.</div>' : ''}<div class="look">WATCH THE TV ↑</div>`;
+      drawMe('idle'); return true;
+    }
+    const mates = (T.mates || []);
+    const mateOn = (v) => mates.filter((m) => m.pick === v).map((m) => esc(first(m.name))).join(' & ');
+    if (T.step === 'landed' || T.step === 'passed') {
+      vib(150);
+      ui.innerHTML = `${tag}<div class="h1 p" style="margin-top:8px">☣ IT'S ON YOUR SYSTEMS</div><div class="psm">${T.step === 'passed' ? `${esc(T.from ? T.from.label : 'They')} passed it to you.` : 'You were breached the most, so the infected file landed on you.'}</div><div class="psm"><b>Next: PASS it up the market, or DEFUSE it</b> (a puzzle). Both of you must agree.</div><div class="look">GET READY</div>`;
+      drawMe('sad'); return true;
+    }
+    if (T.step === 'choose') {
+      const bt = (v, label, sub, dis) => { const mt = mateOn(v); return `<button class="qb${T.mine === v ? ' mine' : ''}" type="button" data-hot="${v}"${dis ? ' disabled' : ''}><span class="l">${v === 'pass' ? '↗' : v === 'defuse' ? '🛠' : '💥'}</span><span>${label}<br><small style="opacity:.75;font-size:13px">${sub}</small></span>${mt ? `<span class="mt">${mt}</span>` : ''}</button>`; };
+      const st = T.split ? '<div class="qst split">YOU SPLIT. <b>Talk it over</b> and pick the same one.</div>' : T.mine ? `<div class="qst">Picked. ${mates.map((m) => `${esc(first(m.name))} ${m.picked ? 'has picked ✓' : 'is thinking…'}`).join(' · ')}</div>` : '<div class="qst"><b>Pick alone first</b>, then agree.</div>';
+      ui.innerHTML = `${tag}<div class="qtx">The infected file is on your systems. What do you do?</div>${T.canPass ? bt('pass', 'PASS IT', 'it moves to the next company up') : bt('take', 'TAKE THE HIT', `lose 25% of your revenue`)}${bt('defuse', 'DEFUSE IT', 'solve a puzzle: be the HERO')}${st}<div class="qtime"><b id="hsec"></b>SECONDS</div>`;
+      drawMe('hold');
+    } else if (T.step === 'puzzle' && T.puzzle) {
+      const opts = T.puzzle.options.map((o, i) => { const mt = mateOn(i); return `<button class="qb${T.mine === i ? ' mine' : ''}" type="button" data-hp="${i}"><span class="l">${HOTL[i]}</span><span>${esc(o)}</span>${mt ? `<span class="mt">${mt}</span>` : ''}</button>`; }).join('');
+      const st = T.split ? '<div class="qst split">YOU SPLIT. <b>Agree</b> or it goes off.</div>' : '<div class="qst"><b>Both pick the same</b> to defuse it.</div>';
+      ui.innerHTML = `${tag}<div class="qhd">🛠 DEFUSE IT</div><div class="qtx">${esc(T.puzzle.prompt)}</div>${opts}${st}<div class="qtime"><b id="hsec"></b>SECONDS</div>`;
+      drawMe('hold');
+    }
+  }
+  const t = $('#hsec'); if (t && T.endsAt) t.textContent = Math.max(0, Math.ceil((T.endsAt - now()) / 1000));
+  return true;
+}
+// ---- AGREE-QUIZ (18 Nov): pick alone; once your whole team has picked you see their picks; agree to score. ----
+const QL = ['A', 'B', 'C', 'D'];
+let quizView = '';
+function drawQuizUi() {
+  const ui = $('#choiceui'), y = Y, Q = y && y.phase === 'quiz' && y.quiz;
+  if (!Q || !y.pair) { if (quizView) { quizView = ''; if (!choosing()) ui.hidden = true; } return false; }
+  ui.hidden = false;
+  const mk = JSON.stringify([Q.pro, Q.step, Q.mine, Q.teamAnswer, Q.agreed, Q.disagree, Q.mates, Q.right, Q.answer]);
+  const irEv = (walk) => Q.ir ? `<div class="irp">${Q.evidence.map((e, i) => `<div class="e"><b>${esc(e.tag)}</b><i>${esc(e.title)}</i><code>${e.lines.map(esc).join('\n')}</code>${walk && walk[i] ? `<em>${esc(walk[i])}</em>` : ''}</div>`).join('')}</div>` : '';
+  const qName = Q.ir ? '🚨 INCIDENT ROOM' : Q.pro ? '🎖 PRO QUESTION' : 'QUICK QUIZ';
+  if (mk !== quizView) {
+    quizView = mk;
+    const mateNames = esc(names((y.mates || []).map((m) => m.name)));
+    if (Q.step === 'brief') {
+      ui.innerHTML = `<div class="qhd">${qName} · YOU'RE THE RESPONDERS</div><div class="qtx">${esc(Q.title)}</div>${irEv()}<div class="qst"><b>Read the evidence together.</b> The question comes in a moment.</div><div class="qtime"><b id="qsec"></b>SECONDS</div>`;
+      drawMe('hold');
+      const t0 = $('#qsec'); if (t0) t0.textContent = Math.max(0, Math.ceil((Q.briefEndsAt - now()) / 1000));
+      return true;
+    }
+    if (Q.step === 'reveal') {
+      const right = Q.right, none = Q.teamAnswer === null;
+      const head = right ? `<div class="h1 m" style="margin-top:0">✓ RIGHT!</div><div class="bigv m"${Q.bonus ? '' : ' style="font-size:44px"'}>${Q.bonus ? '+' + money(Q.bonus) : '+1 FIREWALL'}</div>` : none ? `<div class="h1" style="margin-top:0">NO ANSWER</div><div class="psm">${Q.solo ? 'Time ran out.' : "You didn't agree in time."}</div>` : `<div class="h1 p" style="margin-top:0">NOT THIS TIME</div>`;
+      ui.innerHTML = `<div class="qhd">${qName}</div>${head}` + Q.options.map((o, i) => `<button class="qb${i === Q.answer ? ' ok' : ' dim'}" type="button" disabled><span class="l">${QL[i]}</span><span>${esc(o)}</span></button>`).join('')
+        + `<div class="qwhy2">${esc(Q.why)}</div>${irEv(Q.walk)}<div class="psm">${Q.pct}% of the room got it</div><div class="look">LOOK UP ↑</div>`;
+      drawMe(right ? 'happy' : 'idle'); if (right) vib([30, 40, 30]);
+      return true;
+    }
+    const canPick = !Q.agreed && (Q.mine === null || Q.disagree || Q.step === 'agree');
+    const mateOn = (i) => (y.mates || []).length && Q.mates.filter((m) => m.pick === i).map((m) => esc(first(m.name))).join(' & ');
+    const opts = Q.options.map((o, i) => { const mt = mateOn(i); return `<button class="qb${Q.mine === i ? ' mine' : Q.mine !== null && !canPick ? ' dim' : ''}" type="button" data-q="${i}"${canPick ? '' : ' disabled'}><span class="l">${QL[i]}</span><span>${esc(o)}</span>${mt ? `<span class="mt">${mt}</span>` : ''}</button>`; }).join('');
+    let st;
+    if (Q.agreed) st = `<div class="qst agree">✓ ${Q.solo ? 'LOCKED IN' : 'YOU AGREED'}: <b>${QL[Q.teamAnswer]}</b><br>Watch the TV for the answer.</div>`;
+    else if (Q.disagree) st = `<div class="qst split">YOU SPLIT. <b>Talk it over</b> and pick the same one.</div>`;
+    else if (Q.mine !== null) st = `<div class="qst">Picked <b>${QL[Q.mine]}</b>. ${Q.mates.map((m) => `${esc(first(m.name))} ${m.picked ? 'has picked ✓' : 'is thinking…'}`).join(' · ')}<br><small>You'll see their pick once they pick.</small></div>`;
+    else st = `<div class="qst">${Q.solo ? 'Pick one.' : `<b>Pick alone first.</b> Then you'll see ${mateNames}'s pick.`}</div>`;
+    ui.innerHTML = `<div class="qhd">${qName}${Q.pro ? ' · DOUBLE' : ''} · ${Q.step === 'agree' ? 'LAST CHANCE TO AGREE' : Q.solo ? 'SOLO' : 'AGREE TO SCORE'}</div><div class="qtx">${esc(Q.question)}</div>${irEv()}${opts}${st}<div class="qtime"><b id="qsec"></b>SECONDS</div>`;
+    drawMe(Q.agreed ? 'happy' : 'hold');
+  }
+  const t = $('#qsec'), end = Q.step === 'brief' ? Q.briefEndsAt : Q.step === 'pick' ? Q.pickEndsAt : Q.agreeEndsAt;
+  if (t && end) t.textContent = Math.max(0, Math.ceil((end - now()) / 1000));
+  return true;
+}
+
+const GOAL = `<div class="goal"><span class="g1">🎯 KEEP THE BUSINESS RUNNING</span><span class="g2"><svg width="16" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z" fill="#ff4fd8"/></svg>AVOID THE SCAMS</span></div>`;
+// Your partner's thumb, live and big: blame and credit are visible.
+function matesHtml(y) {
+  if (!y.mates || !y.mates.length) return '';
+  const done = y.phase === 'play' && !['hold', 'wait'].includes(y.state);
+  return y.mates.map((m) => {
+    const n = esc(first(m.name)), c = A.lookOf(m);
+    if (!m.connected) return `<div class="mate off">${A.avatar(c, 'idle', -1)}<span>${n} <b>phone offline</b></span></div>`;
+    if (m.away) return `<div class="mate off">${A.avatar(c, 'idle', -1)}<span>${n} <b>stepped away</b></span></div>`;
+    if (m.down) return `<div class="mate">${A.avatar(c, 'hold', -1)}<span>${n} <b>is holding</b></span></div>`;
+    return `<div class="mate off">${A.avatar(c, 'idle', -1)}<span>${n} <b>${y.phase === 'ready' || y.phase === 'walk' || y.state === 'wait' ? 'not in yet' : done ? 'is off' : 'let go'}</b></span></div>`;
+  }).join('');
+}
+function drawMates() { const e = $('#mates'); if (!e || !Y) return; const h = matesHtml(Y); if (e.dataset.h !== h) { e.innerHTML = h; e.dataset.h = h; } }
+const matesBox = '<div class="mates" id="mates"></div>';
+const btn = (st, label) => `<div class="bigbtn ${st}"><svg viewBox="0 0 330 300" aria-hidden="true">${A.bigButton(st, label)}</svg></div>`;
+
+function draw(prev) {
+  const enc = Y.phase === 'ransom' && Y.ransom && Y.ransom.role === 'locked' && !(Y.ransom.result && Y.ransom.result.freed === (Y.pair && Y.pair.id));
+  $('#bank').textContent = (enc ? '🔒 ' : '') + money(Y.total);
+  $('#prac').hidden = !(Y.practice && ['ready', 'play', 'crash', 'reveal'].includes(Y.phase));
+  if (Y.phase !== 'play' || Y.state !== 'hold') frozen = null;
+  if (drawPair()) { view = ''; return; }
+  if (drawChoice()) { view = ''; pad.innerHTML = ''; return; }
+  if (drawQuizUi() || drawHotUi()) { view = ''; pad.innerHTML = ''; return; }
+  const k = viewKey();
+  if (k === view) {
+    if (Y.phase === 'ready') { const r = $('#rdy'); if (r && Y.ready) r.textContent = `${Y.ready.down} / ${Y.ready.of} TEAMS READY`; }
+    drawMates();
+    return;
+  }
+  const was = view; view = k;
+  const y = Y, isDown = down;
+  const mates = names((y.mates || []).map((m) => m.name));
+  render(y, isDown, was, mates);
+  pad.querySelectorAll('.bigv').forEach((e) => fitNum(e, 72, innerWidth - 48));
+  drawMates();
+}
+// 'BOTH' for a pair, 'ALL 3' for a trio.
+const both = (y) => ((y.mates || []).length > 1 ? 'ALL ' + (y.mates.length + 1) : 'BOTH');
+function render(y, isDown, was, mates) {
+  if (y.phase === 'lobby') return screen(`${GOAL}${teamArt(y, 'idle')}<div class="pbig">${esc(y.name)}</div><div class="look">LOOK UP AT THE BIG SCREEN ↑</div>`);
+  if (y.phase === 'walk') {
+    // Card 1 is live: thumb down, wait for your partner, watch the practice pot grow (and stop when one lets go).
+    if (y.walk.step === 2) return screen(`<div class="psm" style="margin:0 0 6px;letter-spacing:.16em">WHEN TO LET GO</div><div class="ptitle" style="margin-top:0">When you <span style="color:var(--mint)">spot the red flag</span></div><div class="zrow e"><span class="ic">😬</span><span><b>Too early</b>Keep the revenue. No bonus.</span></div><div class="zrow w"><span class="ic">🚩</span><span><b>Spotted it</b>Keep the revenue +50%.</span></div><div class="zrow a"><span class="ic">💥</span><span><b>Too late</b>The scam takes it.</span></div><div class="zrow r"><span class="ic">✅</span><span><b>Real message?</b>Hold to the end: ×2.</span></div>`);
+    if (y.walk.step > 0) return screen(`${GOAL}${teamArt(y, 'idle', { meOn: false, mateOn: false })}<div class="pbig">LOOK UP ↑</div><div class="psm">HOW IT WORKS · ${y.walk.step + 1} / ${y.walk.steps}</div>`);
+    const potEl = `<div class="wpot${y.keysIn && isDown ? ' on' : ''}" id="wpot">R0</div><div class="potl" id="wpotl">PRACTICE REVENUE</div>`;
+    if (!isDown) return screen(`${GOAL}<div class="pbig">PUT YOUR<br>THUMB DOWN</div>${matesBox}${btn('idle', 'PRESS & HOLD')}`);
+    if (!y.keysIn) return screen(`<div class="wait">WAITING FOR<br>${esc(mates)}…</div>${matesBox}${btn('on', 'YOUR KEY IS IN')}${potEl}`);
+    return screen(`${potEl}${matesBox}${btn('on', 'HOLDING')}<div class="tip"><b>${y.solo ? 'Holding' : both(y) + ' down'}</b> = it grows</div>`);
+  }
+  if (y.phase === 'stage') {
+    const g = y.stage;
+    if (g.kind === 'act') {
+      const res = g.choice && y.mode ? pairResult({ ...y, pick: y.pick }, y.mode) : g.rule ? `<div class="pq" style="margin-top:6px">${esc(g.rule)}</div>` : `<div class="pq" style="margin-top:6px">${esc(g.lead === 'WATCH OUT FOR' ? 'Watch out for' : 'New trick:')} ${esc(g.trick)}.</div>`;
+      return screen(`<div class="pact">ACT ${g.act}</div><div class="ptitle">${actTitle(g.name)}</div>${res}${g.tip ? `<div class="syncl" style="font-size:16px">${esc(g.tip)}</div>` : ''}<div class="psm">${g.count} MESSAGE${g.count === 1 ? '' : 'S'} · POTS ×${g.mult}${g.allIn ? ' · ALL IN LAST' : ''}</div><div class="look">LOOK UP ↑</div>`);
+    }
+    if (g.kind === 'go') return screen(`<div class="stg">PRACTICE OVER</div><div class="stx go">NOW<br>FOR REAL</div><div class="look">LOOK UP ↑</div>`);
+    if (g.kind === 'final') return screen(`<div class="stg">FINAL MESSAGE</div><div class="stx fin">ALL IN<br>×${g.mult}</div><div class="look">LOOK UP ↑</div>`);
+    return screen(`<div class="stg">STAKES UP</div><div class="stx">×${g.mult}</div><div class="psm">BANKED POTS ×${g.mult}</div>`);
+  }
+  if (y.phase === 'ready' && y.closed) return renderClosed(y, isDown);
+  if (y.phase === 'ready') {
+    const tag = y.solo ? '<div class="role so">SOLO · ONE KEY</div>' : y.keysIn ? `<div class="role ok">✓ ${both(y)} KEYS IN</div>` : `<div class="role">TWO KEYS</div>`;
+    const sub = isDown ? (y.solo || y.keysIn ? 'Holding · <b>watch the big screen</b>' : `Your key is in · <b>waiting for ${esc(mates)}</b>`) : '<b>Press &amp; hold</b> to put your key in';
+    const modeChip = y.mode ? ` <span class="mode ${y.mode}">${y.mode === 'bold' ? '🔥 BOLD ×2' : '🛡 SAFE'}</span>` : '';
+    const stake = y.practice ? '' : `<div class="stake">${y.act ? `ACT ${y.act.n} · MESSAGE ${y.act.i + 1} / ${y.act.of}` : `MESSAGE ${y.index + 1} / ${y.count}`} · ${y.mult === 5 ? 'ALL IN ' : 'POTS '}×${y.mult}${modeChip}</div>`;
+    return screen(`${stake}${tag}${matesBox}${btn(isDown ? 'on' : 'idle', isDown ? 'KEY IN' : 'PRESS & HOLD')}<div class="tip">${sub}</div><div class="psm" id="rdy" style="margin-top:4px">${y.ready ? `${y.ready.down} / ${y.ready.of} TEAMS READY` : ''}</div>`);
+  }
+  if (y.phase === 'play') {
+    // 19 Nov QA: this phone dropped out of the message (app switch, screen lock, refresh, lost signal): no bank, no breach.
+    if (y.away) return screen(`<div class="h1 p" style="margin-top:30px">YOU STEPPED AWAY</div><div class="psm">You left this message, so your thumb doesn't count for it.${y.solo ? '' : ' Your team carries on without you.'}<br><b>You're back in for the next one.</b></div><div class="look">LOOK UP AT THE BIG SCREEN</div>`, 'idle');
+    if (y.state === 'hold') {
+      lastBonus = y.play ? y.play.bonus : 0;
+      return screen(`<div class="potrow">${A.MINIJAR}<div class="pot" id="pot">R0</div></div><div class="potl">REVENUE${y.practice ? '' : ` <span class="mult">×${y.mult}</span>`}${y.mode ? ` <span class="mode ${y.mode}">${y.mode === 'bold' ? '🔥 BOLD' : '🛡 SAFE'}</span>` : ''}</div>${matesBox}${btn('on', y.action || 'HOLDING')}<div class="tip"><b>Let go</b> = ${y.solo ? 'you lock it in' : `you ${both(y).toLowerCase()} lock it in`}<br><span class="r">Hold through a scam</span> = ${y.solo ? 'you lose it' : `you ${both(y).toLowerCase()} lose`}</div>`);
+    }
+    if (y.state === 'wait') return screen(`<div class="potrow">${A.MINIJAR}<div class="pot locked">R0</div></div><div class="potl">CLOSED · NEEDS EVERY KEY${y.practice ? '' : ` <span class="mult">×${y.mult}</span>`}</div>${matesBox}${btn(isDown ? 'on' : 'idle', y.action || 'PRESS & HOLD')}<div class="tip">${isDown ? '<b>Keep holding</b>' : '<b>Press &amp; hold</b>'}</div>`);
+    if (y.state === 'banked') {
+      if (!was.startsWith('play:' + y.index + ':banked')) vib(30);
+      const line = y.solo ? 'LOCKED IN' : y.byMe ? 'YOU LOCKED IT IN' : `${esc(first(y.by))} LOCKED IT IN FOR YOU`;
+      return screen(`${teamArt(y, 'banked')}<div class="h1 g">${line}</div><div class="bigv">+${money(y.got)}</div>${y.sync ? '<div class="syncl">🤝 IN SYNC ×1.5</div>' : ''}<div class="psm">${y.byMe && !y.solo ? `Safe for ${esc(mates)} too` : 'Revenue locked in'}</div><div class="look">LOOK UP ↑</div>`, 'happy');
+    }
+    if (y.state === 'out') return screen(`${teamArt(y, 'idle')}<div class="h1">SITTING THIS ONE OUT</div><div class="psm">Every key in before the next one</div>`, 'idle');
+    return screen(`<div class="h1">NEXT ONE SOON</div><div class="look">LOOK UP ↑</div>`);
+  }
+  if (y.phase === 'crash' && y.contain) return renderContain(y);
+  if (y.phase === 'reveal' && y.restored && y.restored.now) { vib([40, 30, 40]); return screen(`${teamArt(y, 'banked')}<div class="h1 m" style="margin-top:0">RESTORED FROM BACKUP</div><div class="psm" style="font-size:19px;color:var(--ink)"><b>Your business is open again.</b></div><div class="psm">Revenue counts again. A second breach closes you for good.</div><div class="look">LOOK UP ↑</div>`, 'happy'); }
+  if (y.closed && ['ready', 'play', 'crash', 'reveal'].includes(y.phase) && !(y.phase === 'reveal' && y.mark === 'spotted')) return renderClosed(y, isDown);
+  if (y.phase === 'crash' || y.phase === 'reveal') {
+    // The mark (16 Nov): SPOTTED IT (+50%), LEFT EARLY, TAPPED IT (SAFE keeps half), TRUSTED IT (×2). Never the text.
+    const P = y.persona && A.PERSONA[y.persona];
+    const who = y.phase === 'reveal' && P ? `<div class="who"><svg viewBox="-110 -250 220 260" aria-hidden="true">${A.attacker(y.persona)}</svg><span>IT WAS ${P.name}</span></div>` : '';
+    const foot = y.phase === 'reveal' ? `<div class="look">THE RED FLAG IS ON THE BIG SCREEN ↑</div>` : '<div class="look">LOOK UP ↑</div>';
+    const boldx = y.bold ? ' · 🔥 BOLD ×2' : '';
+    if (y.state === 'caught') {
+      if (y.phase === 'crash') vib(200);
+      const cols = [A.lookOf(y), ...((y.mates || []).map((m) => A.lookOf(m)))];
+      const kept = y.kept ? `<div class="safe">${A.SHIELD_ICON('#5dffb0', 20)}<span>SAFE: you keep <b>${money(y.kept)}</b></span></div>` : `<div class="safe">${A.SHIELD_ICON('#5dffb0', 20)}<span>Your <b>${money(y.total)}</b> revenue is still safe</span></div>`;
+      return screen(`<div class="scene"><svg viewBox="0 0 346 250" aria-hidden="true">${A.caughtArt(y.persona, cols)}</svg></div><div class="h1 p">💥 ${P ? P.name.split(' ').map((w) => w[0] + w.slice(1).toLowerCase()).join(' ') : 'A scam'} got ${y.solo ? 'you' : 'you ' + both(y).toLowerCase()}</div><div class="bigv lost">${money(y.lost)}</div>${y.consequence && y.phase === 'crash' ? `<div class="cons">${esc(y.consequence)}</div>` : ''}${kept}${y.phase === 'reveal' ? foot : ''}`, 'sad', true);
+    }
+    if (y.state === 'dbl') {
+      if (y.phase === 'crash') vib([40, 30, 40]);
+      return screen(`${teamArt(y, 'dbl')}<div class="pres spot"><div class="rt1">✅ TRUSTED IT</div><div class="rt2">It was real and you held on: ×2${boldx}</div></div><div class="bigv m">+${money(y.got)}</div>${foot}`, 'happy');
+    }
+    if (y.state === 'banked') {
+      const by = y.solo || y.byMe ? 'You' : esc(first(y.by));
+      const card = y.mark === 'spotted'
+        ? `<div class="pres spot"><div class="rt1">🚩 SPOTTED IT</div><div class="rt2">${by} let go right after the red flag<br>${money(y.base)} revenue + ${money(y.bonus)} bonus${boldx}</div></div>`
+        : `<div class="pres early"><div class="rt1">😬 CLOSED EARLY</div><div class="rt2">${by} let go before ${y.outcome === 'double' ? 'the end: it was real' : 'any red flag'}<br>No bonus${boldx}</div></div>`;
+      return screen(`${teamArt(y, 'banked')}${card}<div class="bigv">+${money(y.got)}</div>${y.sync ? `<div class="syncl">🤝 LET GO TOGETHER ×1.5${y.sync.extra ? ' · +' + money(y.sync.extra) : ''}</div>` : ''}${who}${foot}`, 'happy');
+    }
+    return screen(`${teamArt(y, 'idle')}<div class="h1">SAT OUT</div><div class="bigv">R0</div>${who}${foot}`, 'idle');
+  }
+  if (y.phase === 'ransom' && y.ransom) return renderRansom(y);
+  if (y.phase === 'final') {
+    // LAST BUSINESS STANDING (18 Nov): what you won, then your company report, made to show your neighbour.
+    const AW = { lbs: ['🏢', 'LAST BUSINESS STANDING', 'lbs'], revenue: ['📈', 'TOP REVENUE', 'revenue'], firewall: ['🛡', 'HUMAN FIREWALL', ''] };
+    const won = (y.awards || []).map((a) => AW[a]).filter(Boolean);
+    const R = y.report;
+    if (!R) return screen(`${teamArt(y, 'final')}<div class="look">LOOK UP ↑</div>`, 'happy');
+    const closed = !!R.closedAct, cols = [A.lookOf(y, myName), ...((y.mates || []).map((m) => A.lookOf(m)))];
+    const bld = `<div class="rbldg"><svg viewBox="-30 -100 180 360" aria-hidden="true">${A.building(0, 120, 210, 240, { cols, open: !closed, total: R.total, label: R.label }, { row: 20, pair: true, pk: 0.4, crown: R.rank === 1, crownK: 0.8, happy: !closed })}</svg></div>`;
+    const top = won.length ? `<div class="psm" style="margin:0;letter-spacing:.2em">YOU WON</div>${won.map((w) => `<div class="won ${w[2]}">${w[0]} ${w[1]}</div>`).join('')}` : `<div class="psm" style="margin:0;letter-spacing:.2em">THANKS FOR PLAYING</div>`;
+    const up = Math.max(0, Math.min(100, R.uptime || 0));
+    const rep = `<div class="rep${closed ? ' closed' : ''}"><div class="rk">COMPANY REPORT · HOLD</div><div class="rn">${esc(R.label)}</div>
+      <div class="rr"><span class="st">${closed ? 'CLOSED IN ACT ' + R.closedAct : R.restored ? 'RESTORED FROM BACKUP' : 'STILL TRADING'}${R.hero ? ' · 🦸 HERO' : ''}</span><span class="rank">#${R.rank} <small>of ${R.of}</small></span></div>
+      <div class="rv">REVENUE</div><div class="rvv">${money(R.total)}</div>
+      <div class="stats"><div class="s"><b class="${up >= 80 ? 'g' : ''}">${up}%</b><span>UPTIME</span></div><div class="s"><b class="${R.breaches ? 'm' : 'g'}">${R.breaches}</b><span>BREACHES</span></div><div class="s"><b>${R.spotted}<small style="font-size:13px;color:var(--dim)">/${R.scams}</small></b><span>SPOTTED</span></div>${R.quizzes ? `<div class="s"><b>${R.quiz || 0}<small style="font-size:13px;color:var(--dim)">/${R.quizzes}</small></b><span>QUIZ</span></div>` : ''}</div>
+      <div class="bar"><i style="width:${up}%"></i></div></div>`;
+    return screen(`${top}${rep}${bld}<div class="showhint">Turn your phone to <b>your neighbour</b> 👀</div><div class="bitbyl">How this game was built by agents: <a href="https://bitby.ai/?src=hold" target="_blank" rel="noopener">bitby.ai</a></div>`, closed ? 'idle' : 'happy');
+  }
+  return undefined;
+}
+
+// ---- LAST BUSINESS STANDING (18 Nov): CONTAIN IT on a breached phone; a closed company holds along ----
+let containKey = '';
+function renderContain(y) {
+  const K = y.contain, ck = 'C' + y.index; if (ck !== containKey) { containKey = ck; myTaps = 0; tapQ = 0; }
+  if (K.role === 'watch') {
+    if (y.state === 'banked' || y.state === 'dbl') return screen(`${teamArt(y, 'banked')}<div class="h1 g">YOU'RE SAFE</div><div class="psm">${K.count === 1 ? 'A company was' : K.count + ' companies were'} breached.<br><b>They're tapping to contain it.</b></div><div class="look">WATCH THE TV ↑</div>`, 'happy');
+    return screen(`${teamArt(y, 'idle')}<div class="h1">BREACH IN THE ROOM</div><div class="psm">${K.count === 1 ? 'One company is' : K.count + ' companies are'} tapping to stay open.</div><div class="look">WATCH THE TV ↑</div>`, 'idle');
+  }
+  if (K.step === 'ready') { // 19 Nov: a 3·2·1 so the pair knows what's coming before the window opens
+    vib([200, 100, 200]);
+    return screen(`<div class="h1 p" style="margin-top:0">💥 BREACH!</div><div class="ptitle" style="margin:4px 0 0">GET READY TO TAP</div><div class="rme" id="cready">3</div><div class="cneed">In a moment: <b>both of you tap as fast as you can</b> for ${Math.round(K.ms / 1000 / (y.scale || 1))} s.<br>${K.need} taps each keeps your business open.</div><div class="tapbtn wait"><svg viewBox="0 0 330 300" aria-hidden="true">${A.bigButton('gold', 'GET READY')}</svg></div>`, 'sad', true);
+  }
+  if (K.step === 'mash') {
+    vib(200);
+    return screen(`<div class="h1 p" style="margin-top:0">💥 BREACHED</div><div class="ptitle" style="margin:4px 0 0">CONTAIN IT!</div><div class="ccount" id="ccount"></div><div class="rme" id="rme">0</div><div class="psm" style="margin-top:0">YOUR TAPS</div><div class="cbar" id="cbar"><i></i></div><div class="cneed"><b>${K.need} taps each</b> or your business closes for good</div><div class="tapbtn" id="tapbtn"><svg viewBox="0 0 330 300" aria-hidden="true">${A.bigButton('gold', 'TAP TAP TAP')}</svg></div>`, 'sad', true);
+  }
+  if (K.result === 'contained') { vib([30, 40, 30]); return screen(`${teamArt(y, 'banked')}<div class="h1 m">CONTAINED ✓</div><div class="bigv">${Math.floor(K.score)} <span style="font-size:22px">taps each</span></div><div class="psm">You lost this message's revenue,<br><b>but your business stays open.</b></div><div class="look">LOOK UP ↑</div>`, 'happy'); }
+  vib(300);
+  const cols = [A.lookOf(y), ...((y.mates || []).map((m) => A.lookOf(m)))];
+  return screen(`<div class="scene"><svg viewBox="0 0 346 250" aria-hidden="true">${A.caughtArt(y.persona || 'phisher', cols)}</svg></div><div class="h1 p">BREACHED</div><div class="psm" style="font-size:20px;color:var(--ink);margin-top:2px"><b>YOUR BUSINESS IS CLOSED</b></div><div class="psm">${Math.floor(K.score)} of ${K.need} taps each · your ${money(y.total)} is frozen</div><div class="hold-along">Keep holding: <b>every lock-in fills your backup</b>. 2 fills and you reopen.</div>`, 'sad', true);
+}
+function renderClosed(y, isDown) {
+  const head = `<div class="h1 p" style="margin-top:0">YOUR BUSINESS IS CLOSED</div><div class="closedtag">CLOSED IN ACT ${y.closed.act} · ${money(y.total)} FROZEN</div>`;
+  const B = y.backup;
+  const note = B ? `<div class="bkp">💾 <b>BACKUP ${B.have}/${B.need}</b><div class="cells">${Array.from({ length: B.need }, (_, i) => `<i class="${i < B.have ? 'f' : ''}"></i>`).join('')}</div>${B.have >= B.need ? 'Full: <b>you reopen at the reveal</b>' : 'Lock in before a scam (or hold a real one) to fill it. <b>Full = you reopen.</b>'}</div>`
+    : `<div class="hold-along">Holding along: <b>let go at the red flag</b> and it still counts for Human Firewall.</div>`;
+  if (y.phase === 'ready' || (y.phase === 'play' && (y.state === 'hold' || y.state === 'wait'))) return screen(`${head}${matesBox}${btn(isDown ? 'on' : 'idle', isDown ? 'HOLDING ALONG' : 'PRESS & HOLD')}${note}`, 'idle');
+  if (y.phase === 'play' && y.state === 'banked') return screen(`${head}${teamArt(y, 'banked')}<div class="psm">You let go. <b>Look up</b> for the red flag.</div>`, 'idle');
+  return screen(`${head}${teamArt(y, 'idle')}${note}<div class="look">LOOK UP ↑</div>`, 'idle');
+}
+function containTick() {
+  const K = Y && Y.phase === 'crash' && Y.contain; if (!K || K.role !== 'contain') return;
+  if (K.step === 'ready') { const r = $('#cready'); if (r) r.textContent = Math.max(1, Math.ceil((Y.phaseEndsAt - now()) / 1000 / (Y.scale || 1))); return; }
+  if (K.step !== 'mash') return;
+  const c = $('#ccount'); if (c) c.textContent = Math.max(0, Math.ceil((Y.phaseEndsAt - now()) / 1000 / (Y.scale || 1))) + 's';
+  // The team's average from the server, or my own taps spread over the team while the next frame is on its way.
+  const b = $('#cbar'); if (b) { const v = Math.max(K.score || 0, myTaps / ((Y.mates || []).length + 1)); b.firstChild.style.width = Math.min(100, (100 * v) / K.need) + '%'; b.classList.toggle('ok', v >= K.need); }
+}
+
+// ---- RANSOMWARE (16 Nov prototype): the locked team and its rival tap as fast as they can; everyone else watches the TV ----
+const LOCKSVG = A.LOCK;
+let myTaps = 0, tapQ = 0, tapDuel = '';
+const containing = () => Y && Y.phase === 'crash' && Y.contain && Y.contain.step === 'mash' && Y.contain.role === 'contain';
+const mashing = () => (Y && Y.phase === 'ransom' && Y.ransom && Y.ransom.step === 'mash' && Y.ransom.role !== 'watch') || containing();
+function renderRansom(y) {
+  const R = y.ransom, me = R.role, L = R.locked || {}, V = R.rival || {}, res = R.result;
+  const myTeam = me === 'locked' ? L : me === 'rival' ? V : null, foe = me === 'locked' ? V : me === 'rival' ? L : null;
+  const dk = R.duel + ':' + (y.pair && y.pair.id); if (dk !== tapDuel) { tapDuel = dk; myTaps = 0; tapQ = 0; }
+  const tag = `<div class="rtag">${LOCKSVG} RANSOMWARE</div>`;
+  const bars = myTeam ? `<div class="rbars"><div class="rb us"><span>YOU</span><div class="tr"><i id="rbUs"></i></div></div><div class="rb them"><span>${esc(foe.label || '')}</span><div class="tr"><i id="rbThem"></i></div></div></div>`
+    : `<div class="rbars"><div class="rb us"><span>🔒 ${esc(L.label || '')}</span><div class="tr"><i id="rbUs"></i></div></div><div class="rb them"><span>${esc(V.label || '')}</span><div class="tr"><i id="rbThem"></i></div></div></div>`;
+  if (me === 'watch') {
+    if (res) return screen(`${tag}<div class="h1" style="margin-top:14px">${res.kind === 'free' ? `🔓 ${esc(L.label)} broke free` : `${esc((res.payer === L.id ? L : V).label)} paid the ransom`}</div>${res.kind === 'paid' && res.amount ? `<div class="bigv lost">${money(res.amount)}</div>` : ''}<div class="look">LOOK UP ↑</div>`, 'idle');
+    return screen(`${tag}<div class="h1" style="margin-top:10px">WATCH THE TV</div><div class="ptitle" style="font-size:26px">🔒 ${esc(L.label)}<br><span>vs</span><br>${esc(V.label)}</div><div class="psm">Ransomware hit them. They're tapping it out.<br>You're safe: <b>just watch.</b></div>${R.step === 'mash' ? bars : ''}<div class="look">WATCH THE TV ↑</div>`, 'happy');
+  }
+  if (R.step === 'card') {
+    if (me === 'locked') return screen(`${tag}<div class="rvs">YOU <span>vs</span> ${esc(V.label)}</div><div class="rlock">${LOCKSVG}</div><div class="h1 p">YOUR SYSTEMS ARE ENCRYPTED</div><div class="psm">${R.duel === 1 ? (R.why === 'act' ? 'You were breached the most this act.' : R.why === 'game' ? 'You were breached the most this game.' : 'Ransomware hit you.') : 'The lock jumped to you.'}<br><b>Out-tap ${esc(V.label)}</b> to break free.</div><div class="look">GET READY TO TAP</div>`, 'sad', true);
+    return screen(`${tag}<div class="rvs">YOU <span>vs</span> ${esc(L.label)}</div>${teamArt(y, 'hold', { mateOn: true })}<div class="h1 g">TAP TO DEFEND</div><div class="psm"><b>Out-tap ${esc(L.label)}</b><br>or the lock jumps to you.</div><div class="look">GET READY TO TAP</div>`, 'hold');
+  }
+  if (R.step === 'count') return screen(`${tag}<div class="rvs">YOU <span>vs</span> ${esc(foe.label || '')}</div><div class="rcount" id="rcount">3</div><div class="psm" style="font-size:18px"><b>TAP AS FAST AS YOU CAN</b><br>when it says GO · ${me === 'locked' ? 'to decrypt' : 'to defend'}</div>`, 'hold', me === 'locked');
+  if (R.step === 'mash') return screen(`<div class="rme" id="rme">0</div><div class="psm" style="margin-top:0">YOUR TAPS</div>${bars}<div class="tapbtn" id="tapbtn"><svg viewBox="0 0 330 300" aria-hidden="true">${A.bigButton('gold', 'TAP! TAP! TAP!')}</svg></div>`, 'hold', me === 'locked');
+  // the result
+  const mine = myTeam && myTeam.id, scores = res.sL != null ? `<div class="psm">${Math.round(res.sL)} vs ${Math.round(res.sV)} taps each</div>` : '';
+  if (res.kind === 'free') {
+    if (res.freed === mine) { vib([30, 40, 30]); return screen(`${tag}${teamArt(y, 'banked')}<div class="h1 m">🔓 YOU BROKE FREE</div>${scores}<div class="safe">${A.SHIELD_ICON('#5dffb0', 20)}<span>Your systems are <b>back online</b></span></div><div class="look">LOOK UP ↑</div>`, 'happy'); }
+    vib(120); return screen(`${tag}<div class="rlock">${LOCKSVG}</div><div class="h1 p">THE LOCK JUMPED TO YOU</div>${scores}<div class="psm"><b>Next duel coming.</b> Get ready.</div>`, 'sad', true);
+  }
+  if (res.payer === mine) { vib(200); return screen(`${tag}<div class="rlock">${LOCKSVG}</div><div class="h1 p">RANSOM PAID</div>${res.amount ? `<div class="bigv lost">${money(res.amount)}</div>` : '<div class="psm"><b>No revenue to take.</b></div>'}${scores}<div class="psm">${Math.round((R.cut || 0.25) * 100)}% of your revenue</div>`, 'sad', true); }
+  return screen(`${tag}${teamArt(y, 'banked')}<div class="h1 m">${me === 'rival' ? 'YOU HELD THE LOCK OFF' : 'YOUR SYSTEMS ARE SAFE'}</div>${scores}<div class="look">LOOK UP ↑</div>`, 'happy');
+}
+function ransomTick() {
+  const R = Y && Y.phase === 'ransom' && Y.ransom; if (!R) return;
+  const k = R.key || 75, me = R.role, us = me === 'rival' ? R.rival : R.locked, them = me === 'rival' ? R.locked : R.rival;
+  const a = $('#rbUs'), b = $('#rbThem');
+  if (a && us) a.style.width = Math.min(100, (100 * (me === 'watch' ? us.score : Math.max(us.score || 0, us.size === 1 ? myTaps : 0))) / k) + '%';
+  if (b && them) b.style.width = Math.min(100, (100 * (them.score || 0)) / k) + '%';
+  const c = $('#rcount'); if (c && R.step === 'count') { const n = String(Math.max(1, Math.min(3, Math.ceil((Y.phaseEndsAt - now()) / ((Y.scale || 1) * 1000))))); if (c.textContent !== n) { c.textContent = n; c.style.animation = 'none'; void c.offsetWidth; c.style.animation = ''; vib(20); } }
+}
+function tapOnce() {
+  myTaps++; tapQ++;
+  const e = $('#rme'); if (e) { e.textContent = myTaps; e.classList.remove('bump'); void e.offsetWidth; e.classList.add('bump'); }
+  const t = $('#tapbtn'); if (t) { t.classList.remove('hit'); void t.offsetWidth; t.classList.add('hit'); }
+  vib(6);
+}
+// Taps go to the server in small batches (the hub allows ~20 frames a second per phone).
+setInterval(() => { if (tapQ > 0 && mashing()) { sock.send({ t: 'tap', n: tapQ }); } tapQ = 0; }, 120);
+
+// A big number shrinks to fit the phone (only re-measured when its length changes).
+function fitNum(e, base, max) {
+  if (e.dataset.len == e.textContent.length) return;
+  e.dataset.len = e.textContent.length; e.style.fontSize = base + 'px';
+  const w = e.offsetWidth; if (w > max) e.style.fontSize = Math.floor(base * max / w) + 'px';
+}
+// ---- per frame: the team pot (from the server's start time, the moment every key went in, and the bumps) ----
+const teamPot = (t, P) => { const sp = P.speed || 1; return P.arm ? Math.max(0, potAt(t * sp) - potAt(P.arm.t * sp) + P.bonus - P.arm.bonus) : 0; };
+function frame() {
+  ransomTick(); containTick();
+  if (choosing()) { const c = $('#csec'); if (c) c.textContent = Math.max(0, Math.ceil((Y.stage.choiceEndsAt - now()) / 1000)); }
+  if (Y && Y.phase === 'walk' && Y.walk && Y.walk.step === 0) {
+    const e = $('#wpot');
+    if (e) {
+      const Wk = Y.walk, growing = Wk.since != null && down;
+      const v = Wk.pot + (growing ? Math.round((Wk.rate * Math.max(0, now() - Wk.since)) / (Y.scale || 1) / 1000) : 0);
+      e.textContent = money(v); e.classList.toggle('on', growing);
+      const l = $('#wpotl'); if (l) l.textContent = growing ? 'PRACTICE REVENUE · GROWING' : v ? 'PRACTICE REVENUE · STOPPED' : 'PRACTICE REVENUE';
+    }
+  }
+  if (Y && Y.phase === 'play' && Y.state === 'hold' && Y.play) {
+    const e = $('#pot');
+    if (e) {
+      const t = Math.max(0, (now() - Y.play.startAt) / (Y.scale || 1) / 1000);
+      // Thumb up: show the pot it banked at (the server confirms after its debounce).
+      const v = !down ? (frozen ??= teamPot(t, Y.play)) : teamPot(t, Y.play);
+      if (down) frozen = null;
+      e.textContent = money(v); fitNum(e, 78, innerWidth - 120);
+      if (Y.play.bonus > lastBonus && down) {
+        const share = Y.play.bonus - lastBonus;
+        e.classList.remove('jump', 'beat'); void e.offsetWidth; e.classList.add('jump');
+        const f = document.createElement('div'); f.className = 'jumpf'; f.textContent = '+' + money(share); f.style.top = Math.max(8, e.getBoundingClientRect().top - 46) + 'px'; pad.querySelectorAll('.jumpf').forEach((x) => x.remove()); pad.appendChild(f); setTimeout(() => f.remove(), 800);
+        vib(15);
+      }
+      lastBonus = Y.play.bonus;
+      const pn = performance.now();
+      if (down && pn >= nextBeat) { nextBeat = pn + Math.max(240, 820 - t * 85); e.classList.remove('beat'); void e.offsetWidth; e.classList.add('beat'); }
+    }
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// ---- input: one verb, thumb down / thumb up. The server debounces and decides. ----
+function setDown(d) {
+  if (d === down) return;
+  down = d;
+  if (d) vib(8);
+  sock.send({ t: 'hold', down: d });
+  if (Y) draw();
+}
+pad.addEventListener('touchstart', (e) => { e.preventDefault(); if (mashing()) { for (let i = 0; i < e.changedTouches.length; i++) tapOnce(); return; } setDown(true); }, { passive: false });
+document.addEventListener('touchend', (e) => { if (down && e.touches.length === 0) { e.preventDefault(); setDown(false); } }, { passive: false });
+document.addEventListener('touchcancel', (e) => { if (e.touches.length === 0 && down) stepAway(); });
+pad.addEventListener('mousedown', (e) => { if (e.button === 0) { e.preventDefault(); if (mashing()) { tapOnce(); return; } setDown(true); } });
+addEventListener('mouseup', () => setDown(false));
+// 19 Nov QA: leaving the page (app switch, screen lock, notification shade) is not a let-go: the phone steps away from the
+// message in play (no bank for the team, no breach), and is back for the next one.
+function stepAway() { down = false; sock.send({ t: 'hold', down: false, away: true }); if (Y) draw(); }
+addEventListener('blur', stepAway);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState !== 'visible') stepAway(); });
+addEventListener('keydown', (e) => { if (e.code === 'Space' && document.activeElement !== $('#pinInput')) { e.preventDefault(); if (e.repeat) return; if (mashing()) { tapOnce(); return; } setDown(true); } });
+addEventListener('keyup', (e) => { if (e.code === 'Space') { e.preventDefault(); setDown(false); } });
+pad.addEventListener('contextmenu', (e) => e.preventDefault());
+window.__hold = { get you() { return Y; }, get down() { return down; } };
+</script>
+</body>
+</html>

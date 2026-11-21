@@ -1,0 +1,21 @@
+{
+  "name": "hold-game",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HOLD: a party game for a room. The TV shows a message line by line; everyone holds a thumb on their phone and lets go before the scam springs.",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node --watch server/server.js",
+    "test": "node test/hold.js",
+    "check:messages": "node scripts/hold-check-messages.js data/hold-messages.json",
+    "report": "node scripts/hold-spot-report.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

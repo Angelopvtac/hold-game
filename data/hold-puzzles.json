@@ -1,0 +1,8 @@
+[
+  { "id": "hp-double-ext", "act": 1, "prompt": "The infected file is one of these. Which one?", "options": ["Invoice_Nov.pdf", "Invoice_Nov.pdf.exe", "Invoice_Nov.xlsx"], "answer": 1, "why": "A double extension hides a program behind a document name: .pdf.exe runs." },
+  { "id": "hp-domain", "act": 1, "prompt": "The file phones home. Which address is really Kestrel's?", "options": ["kestrelfreight.co.za.login-help.com", "login.kestrelfreight.co.za", "kestrelfreight-co-za.com"], "answer": 1, "why": "Read a domain from the right: the real one ends in kestrelfreight.co.za." },
+  { "id": "hp-sender", "act": 1, "prompt": "It arrived by email. Which sender is the fake?", "options": ["naledi@kestrelfreight.co.za", "naledi@kestre1freight.co.za", "naledi.mokoena@kestrelfreight.co.za"], "answer": 1, "why": "kestre1 with the digit 1 instead of the letter l: a lookalike domain." },
+  { "id": "hp-process", "act": 2, "prompt": "It's running. Which process is the malware?", "options": ["explorer.exe in C:\\Windows", "svchost.exe in C:\\Users\\Public", "chrome.exe in Program Files"], "answer": 1, "why": "svchost.exe only lives in System32; one in a user folder is an impostor." },
+  { "id": "hp-signer", "act": 2, "prompt": "Which installer is safe to keep?", "options": ["Signed: Microsoft Corporation", "Signed: Micros0ft Corp0ration", "Not signed"], "answer": 0, "why": "Check the signer exactly: zeros for O's is a fake certificate name." },
+  { "id": "hp-macro", "act": 2, "prompt": "Which macro line drops the malware?", "options": ["Range(\"A1\").Value = Total", "Shell(\"powershell -enc JABj…\")", "MsgBox \"Saved\""], "answer": 1, "why": "A macro launching encoded PowerShell is the classic dropper." }
+]

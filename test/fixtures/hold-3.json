@@ -1,0 +1,5 @@
+[
+  {"id":"bank-alert","kind":"scam","sender":"BANK","channel":"sms","lines":["BANK ALERT: new sign-in","from an unknown device.","Not you? Secure it now:","bank-secure-login.help/verify","Account locks in 30 min."],"flagLine":3,"springLine":4,"action":"SECURE ACCOUNT","consequence":"PASSWORD STOLEN","teach":"Banks never text you a link to log in: open the app yourself.","act":1},
+  {"id":"parcel","kind":"real","sender":"Parcel","channel":"sms","lines":["Your parcel arrives today.","Driver: Tom, 14:10-15:10","Track it in the app","you ordered from.","No payment needed."],"flagLine":null,"springLine":null,"action":"TRACK PARCEL","consequence":null,"teach":"Real: no link, no fee, and it sends you to the app you already use.","act":2},
+  {"id":"new-number","kind":"scam","sender":"+44 7700 900412","channel":"whatsapp","lines":["hey it's me, lost my phone","this is my new number","bit of a nightmare day","can u do me a huge favour?","need £240 for rent today x","will pay u back tmrw promise"],"flagLine":4,"springLine":5,"action":"SEND £240","consequence":"£240 GONE","teach":"New number plus a money ask: call the old number first.","act":3}
+]

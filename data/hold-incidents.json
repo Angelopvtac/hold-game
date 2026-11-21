@@ -1,0 +1,125 @@
+[
+  {
+    "id": "ir-bec-forward",
+    "title": "Finance mailbox is acting strange",
+    "brief": "Kestrel Logistics, Durban. Supplier Brightline says they got a 'new bank details' email from Thandi in Finance.",
+    "evidence": [
+      {
+        "tag": "ALERT",
+        "title": "Defender alert · high",
+        "lines": [
+          "Suspicious inbox forwarding rule",
+          "User: thandi@kestrelfreight.co.za",
+          "Created 08:21 today"
+        ]
+      },
+      {
+        "tag": "SIGN-IN LOG",
+        "title": "Thandi's sign-ins",
+        "lines": [
+          "07:58  Durban, ZA · laptop · MFA ✓",
+          "08:19  Amsterdam, NL · hosting IP · token",
+          "08:20  Amsterdam, NL · Outlook web"
+        ]
+      },
+      {
+        "tag": "INBOX RULE",
+        "title": "Rule named \".\"",
+        "lines": [
+          "If subject has 'invoice' or 'payment'",
+          "→ forward to accounts.kestrelfreight@outlook.com",
+          "→ move to RSS Feeds, mark as read"
+        ]
+      },
+      {
+        "tag": "SENT ITEMS",
+        "title": "Sent 08:34",
+        "lines": [
+          "To: 14 suppliers",
+          "\"Please note our new banking details",
+          "for all future payments…\""
+        ]
+      }
+    ],
+    "question": "You're the responder. What do you do FIRST?",
+    "options": [
+      "Reset Thandi's password and tell her",
+      "Revoke her sessions, kill the rule, warn suppliers",
+      "Wipe and reimage Thandi's laptop"
+    ],
+    "answer": 1,
+    "why": "The attacker holds a stolen session in the cloud mailbox. Cut the session and the rule, then stop the money.",
+    "walk": [
+      "A forwarding rule alert is a classic sign of business email compromise.",
+      "Amsterdam a few minutes after Durban, MFA passed by a token: the session was stolen, not the password guessed.",
+      "Rule named \".\" hides replies and leaks every invoice: delete it, or they keep watching.",
+      "Suppliers already have fake bank details: warn them today, before they pay."
+    ],
+    "sources": [
+      "https://learn.microsoft.com/en-us/security/operations/incident-response-playbook-phishing",
+      "https://learn.microsoft.com/en-us/defender-xdr/alert-grading-playbook-inbox-manipulation-rules",
+      "https://learn.microsoft.com/en-us/entra/identity/users/users-revoke-access"
+    ]
+  },
+  {
+    "id": "ir-consent-app",
+    "title": "An app is reading the CEO's mail",
+    "brief": "Kestrel Logistics, Johannesburg. Naledi (CEO) clicked 'Accept' on a 'shared document' prompt yesterday.",
+    "evidence": [
+      {
+        "tag": "ALERT",
+        "title": "Cloud app alert · medium",
+        "lines": [
+          "Unusual app consent",
+          "App: MailSync Pro (unverified publisher)",
+          "Consented by naledi@kestrelfreight.co.za"
+        ]
+      },
+      {
+        "tag": "APP PERMISSIONS",
+        "title": "MailSync Pro asked for",
+        "lines": [
+          "Mail.ReadWrite · read and change mail",
+          "offline_access · keep access",
+          "Files.Read.All · all her files"
+        ]
+      },
+      {
+        "tag": "SIGN-IN LOG",
+        "title": "Naledi's sign-ins",
+        "lines": [
+          "All from Johannesburg, ZA",
+          "Her password was never used elsewhere",
+          "No failed MFA"
+        ]
+      },
+      {
+        "tag": "APP ACTIVITY",
+        "title": "MailSync Pro · last night",
+        "lines": [
+          "02:10  read 4 812 emails",
+          "02:14  downloaded 'Board pack Q3.pdf'",
+          "02:15  created a draft to Finance"
+        ]
+      }
+    ],
+    "question": "You're the responder. What do you contain FIRST?",
+    "options": [
+      "Reset Naledi's password and MFA",
+      "Delete the MailSync Pro app",
+      "Disable the app, revoke its consent and sessions"
+    ],
+    "answer": 2,
+    "why": "The app has its own token; her password isn't involved. Disable, don't delete: a deleted app can be consented again.",
+    "walk": [
+      "Consent phishing: no password stolen, she gave an app the keys.",
+      "Mail.ReadWrite plus offline_access lets the app read and send mail even while she's offline.",
+      "Clean sign-ins are the tell: resetting her password changes nothing for the app.",
+      "It's already reading and drafting: stop the app first, then look at what it took."
+    ],
+    "sources": [
+      "https://learn.microsoft.com/en-us/security/operations/incident-response-playbook-app-consent",
+      "https://learn.microsoft.com/en-us/entra/identity/users/users-revoke-access"
+    ]
+  }
+]

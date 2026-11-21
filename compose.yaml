@@ -1,0 +1,35 @@
+# HOLD: docker compose up -d --build   (then open http://localhost:8080/screen)
+name: hold-game
+
+services:
+  hold:
+    build: .
+    image: hold-game:latest
+    container_name: hold-game
+    restart: unless-stopped
+    environment:
+      - PORT=8080
+      - BIND=0.0.0.0                      # inside the container; host exposure is the ports line below
+      - PUBLIC_URL=${PUBLIC_URL:-}        # the address phones should use (printed in the QR code)
+      - TRUST_PROXY=${TRUST_PROXY:-0}     # 1 only behind a reverse proxy that sets X-Forwarded-For
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-}
+      - HOLD_MESSAGES=${HOLD_MESSAGES:-/app/data/hold-messages.json}
+    ports:
+      - "127.0.0.1:8080:8080"             # loopback only; use "8080:8080" so phones on your wifi can join
+    volumes:
+      - ./data:/app/data:ro               # edit the message packs without a rebuild
+      - state:/app/state
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:8080/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
+      interval: 15s
+      timeout: 4s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  state:
